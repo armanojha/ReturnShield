@@ -1,0 +1,13 @@
+node_modules/
+dist/
+build/
+coverage/
+cdk.out/
+package-lock.json
+
+# Frozen Phase 00 contracts are byte-hashed in product/baseline-manifest.json.
+# Formatting them would invalidate the approved baseline.
+contracts/
+
+# Generated mirror of the frozen contracts.
+packages/contracts/schemas/

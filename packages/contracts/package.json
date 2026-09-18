@@ -1,0 +1,33 @@
+{
+  "name": "@returnshield/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared validation and types derived from the frozen Phase 00 contracts.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "sync": "node scripts/sync-schemas.mjs",
+    "check": "node scripts/sync-schemas.mjs --check",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:contract": "vitest run"
+  },
+  "dependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1"
+  },
+  "devDependencies": {
+    "typescript": "5.6.3",
+    "vitest": "2.1.3"
+  }
+}

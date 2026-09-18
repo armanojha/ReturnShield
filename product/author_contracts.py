@@ -2,8 +2,8 @@
 import json
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-BASE = ROOT / 'docs/contracts'
+ROOT = Path(__file__).resolve().parents[1]
+BASE = ROOT / 'contracts'
 VERSION = '1.0.0'
 URI = 'https://returnshield.example/contracts/'
 

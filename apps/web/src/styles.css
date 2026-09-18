@@ -1,0 +1,273 @@
+/*
+ * Phase 01 foundation styles.
+ *
+ * Deliberately small: tokens, layout and the health indicator. Design-system
+ * polish is explicitly a cut item in the vault, and feature surfaces belong to
+ * Phases 03, 05 and 07.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  --radius: 8px;
+  --max-width: 68rem;
+
+  --surface: #ffffff;
+  --surface-raised: #f6f7f9;
+  --border: #d9dde3;
+  --text: #16191d;
+  --text-muted: #5b6470;
+  --accent: #1f4ed8;
+
+  --ok: #1a7f4b;
+  --ok-surface: #e8f6ee;
+  --warn: #8a5a00;
+  --warn-surface: #fdf3e0;
+  --danger: #b0261f;
+  --danger-surface: #fdecea;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: #101316;
+    --surface-raised: #181c21;
+    --border: #2c333b;
+    --text: #eef1f5;
+    --text-muted: #9aa4b1;
+    --accent: #7ba2ff;
+
+    --ok: #5fd39a;
+    --ok-surface: #10261c;
+    --warn: #e2b264;
+    --warn-surface: #2a2011;
+    --danger: #f08379;
+    --danger-surface: #2b1513;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--text);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+
+.skip-link:focus {
+  left: var(--space-4);
+  top: var(--space-4);
+  z-index: 10;
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.app {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.app__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-raised);
+}
+
+.app__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 600;
+}
+
+.app__mark {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 3px;
+  background: var(--accent);
+}
+
+.app__nav {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.app__link {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.app__link:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.app__link--active {
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.health {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.875rem;
+}
+
+.health__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.health__label {
+  font-weight: 600;
+}
+
+.health__detail {
+  color: var(--text-muted);
+}
+
+.health__retry {
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.health--loading {
+  color: var(--warn);
+  background: var(--warn-surface);
+}
+
+.health--ok {
+  color: var(--ok);
+  background: var(--ok-surface);
+}
+
+.health--error {
+  color: var(--danger);
+  background: var(--danger-surface);
+}
+
+.app__main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+}
+
+.page__eyebrow {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page__title {
+  margin: var(--space-2) 0 var(--space-3);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  line-height: 1.2;
+}
+
+.page__lede {
+  margin: 0 0 var(--space-6);
+  max-width: 48rem;
+  color: var(--text-muted);
+}
+
+.panel {
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-raised);
+}
+
+.panel__title {
+  margin: 0 0 var(--space-2);
+  font-size: 1rem;
+}
+
+.panel__body {
+  margin: 0 0 var(--space-2);
+}
+
+.panel__meta {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.app__footer {
+  padding: var(--space-4);
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.app__footer p {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+@media (max-width: 40rem) {
+  .health {
+    margin-left: 0;
+    width: 100%;
+  }
+}

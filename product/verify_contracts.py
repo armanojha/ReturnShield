@@ -1,6 +1,6 @@
 """Offline contract acceptance checks, not application or AWS runtime tests.
 
-Run: python docs/product/verify_contracts.py
+Run: python product/verify_contracts.py
 Requires jsonschema 4.x and referencing (already available in authoring environment).
 """
 import copy
@@ -12,8 +12,8 @@ from pathlib import Path
 from jsonschema import Draft202012Validator, FormatChecker
 from referencing import Registry, Resource
 
-ROOT = Path(__file__).resolve().parents[2]
-BASE = ROOT / 'docs/contracts'
+ROOT = Path(__file__).resolve().parents[1]
+BASE = ROOT / 'contracts'
 URI = 'https://returnshield.example/contracts/'
 schemas = {p: json.loads(p.read_text(encoding='utf-8')) for p in BASE.rglob('*.schema.json')}
 registry = Registry().with_resources((s['$id'], Resource.from_contents(s)) for s in schemas.values())
@@ -170,7 +170,7 @@ bad = copy.deepcopy(missing); bad['contributions'][0]['contribution'] = 0
 rejects('data/entities', 'ReturnCase', bad)
 validate('risk/evaluation', 'MissingContext', {'schema_version': '1.0.0', 'policy_version': '1.0.0', 'code': 'ERROR_MISSING_CONTEXT', 'missing_fields': ['seller']})
 
-manifest_path = ROOT / 'docs/product/baseline-manifest.json'
+manifest_path = ROOT / 'product/baseline-manifest.json'
 if manifest_path.exists():
     manifest = json.loads(manifest_path.read_text())
     for name, digest in manifest['sha256'].items():

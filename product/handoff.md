@@ -1,17 +1,17 @@
 # Phase 00 integrator handoff
 
-Branch: `codex/phase-00-contract-lock`. Human approval: **APPROVED 2026-09-18**. Phase 00: **DONE**. Phase 01: **READY, NOT STARTED**.
+Branch: `codex/phase-00-contract-lock`. Human approval: **APPROVED 2026-09-18**. Phase 00: **DONE**. Phase 01 work is recorded separately in `phase-01-handoff.md`.
 
 The user's explicit request to produce Phase 00 in one session authorizes sequential execution of its six individually scoped tasks. No agents or overlapping owners are active. Each task owns only its listed document subtree; the integrator owns this handoff and verification tooling. Source files remain unchanged.
 
-| Order | Task | Dependency confirmation | Owned paths | State |
-|---|---|---|---|---|
-| 1 | P0-PROD-01 | Available authoritative source notes read; source PDF absent | docs/product/** | DONE |
-| 2 | P0-CON-01 | P0-PROD-01 DONE | docs/contracts/api/** | DONE |
-| 3 | P0-DATA-01 | P0-PROD-01 DONE | docs/contracts/data/** | DONE |
-| 4 | P0-RISK-01 | P0-PROD-01 DONE | docs/contracts/risk/** | DONE |
-| 5 | P0-AI-01 | P0-CON-01 authored and reviewed before AI schema; combined reference verification passed | docs/contracts/ai/** | DONE |
-| 6 | P0-SEED-01 | P0-DATA-01 and P0-RISK-01 authored and reviewed before fixtures; seed verification passed | docs/contracts/seeds/** | DONE |
+| Order | Task       | Dependency confirmation                                                                   | Owned paths          | State |
+| ----- | ---------- | ----------------------------------------------------------------------------------------- | -------------------- | ----- |
+| 1     | P0-PROD-01 | Available authoritative source notes read; source PDF absent                              | product/\*\*         | DONE  |
+| 2     | P0-CON-01  | P0-PROD-01 DONE                                                                           | contracts/api/\*\*   | DONE  |
+| 3     | P0-DATA-01 | P0-PROD-01 DONE                                                                           | contracts/data/\*\*  | DONE  |
+| 4     | P0-RISK-01 | P0-PROD-01 DONE                                                                           | contracts/risk/\*\*  | DONE  |
+| 5     | P0-AI-01   | P0-CON-01 authored and reviewed before AI schema; combined reference verification passed  | contracts/ai/\*\*    | DONE  |
+| 6     | P0-SEED-01 | P0-DATA-01 and P0-RISK-01 authored and reviewed before fixtures; seed verification passed | contracts/seeds/\*\* | DONE  |
 
 DONE means artifact authoring and integrator contract checks complete. The complete Phase 00 baseline received explicit human approval on 2026-09-18. P0-PROD-01 review: scope, flow, tiers, cut order, conflicts and gate are explicit in scope.md.
 
@@ -34,7 +34,7 @@ Negative fixture testing found optional date-time validation was unavailable in 
 
 ## Baseline and handoff
 
-Candidate tag: `phase-00-contracts-v1.0.0-candidate`. Approved tag: `phase-00-contracts-v1.0.0`. The approved tag points at the approval-record commit. baseline-manifest.json hashes every contract file using UTF-8 with LF-normalized newlines, so Windows Git newline conversion does not invalidate a fresh checkout. Final verifier result: 449 checks passed. source-manifest.json records raw-byte hashes of the available vault Markdown used as planning context. No source vault edits, application folders, dependencies, CI or AWS resources were created. No merge or push is performed.
+Candidate tag: `phase-00-contracts-v1.0.0-candidate`. The planned approved tag is `phase-00-contracts-v1.0.0`, but Git metadata permission was denied when creation was attempted. baseline-manifest.json hashes every contract file using UTF-8 with LF-normalized newlines, so Windows Git newline conversion does not invalidate a fresh checkout. Final verifier result: 449 checks passed. source-manifest.json records raw-byte hashes of the available vault Markdown used as planning context. No source vault edits were made.
 
 Risks: the original PDF/report is unavailable; proposed triggers are synthetic demo policy, not empirically calibrated; source references contain conflicts explicitly reconciled in scope.md. JSON Schema cannot prove evidence semantics or arithmetic equality; the verifier covers the fixtures and the later production validator/evaluator must enforce the documented invariants for arbitrary inputs. Auth and deployment access controls require later runtime work.
 
