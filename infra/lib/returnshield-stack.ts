@@ -16,6 +16,8 @@ import {
 import type { StackProps } from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 
+import { ReturnShieldDataIndexes } from '../data/data-indexes';
+
 /** Environments this stack may be deployed into. */
 export const ENVIRONMENTS = ['dev', 'staging', 'prod'] as const;
 export type EnvironmentName = (typeof ENVIRONMENTS)[number];
@@ -69,8 +71,11 @@ export class ReturnShieldStack extends Stack {
       sortKey: { name: 'sk', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       pointInTimeRecovery: isProduction,
+      deletionProtection: isProduction,
       removalPolicy: isProduction ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
     });
+
+    new ReturnShieldDataIndexes(this, 'DataIndexes', { table: this.table });
 
     // --- Health function --------------------------------------------------
     const healthLogGroup = new logs.LogGroup(this, 'HealthFunctionLogs', {

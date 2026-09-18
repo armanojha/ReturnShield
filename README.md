@@ -158,10 +158,10 @@ git-ignored; `.env.example` contains no real values.
 `infra/` is AWS CDK v2 in TypeScript. Resources are named
 `returnshield-<env>-<resource>`.
 
-The Phase 01 stack contains only what the health path needs, plus the table
-Phase 02 will populate: an API Gateway REST API with `/v1/health`, a Node 20
-ARM64 Lambda, a DynamoDB table (on-demand, untouched in this phase), CloudWatch
-log groups with explicit retention, and stage access logging.
+The stack contains the Phase 01 health path plus the Phase 02 data foundation:
+an API Gateway REST API with `/v1/health`, a Node 20 ARM64 Lambda, an on-demand
+DynamoDB table with four documented access-pattern indexes, CloudWatch log
+groups with explicit retention, and stage access logging.
 
 IAM is least-privilege in substance, not just in name: the health function gets
 a bare role granted only `logs:CreateLogStream` and `logs:PutLogEvents` on its
@@ -171,7 +171,8 @@ needs neither. A synth test asserts this.
 
 ### Deployment prerequisites
 
-1. AWS CLI v2 configured with credentials for a synthetic sandbox account.
+1. AWS credentials available to CDK for a synthetic sandbox account. The
+   standalone AWS CLI is convenient but not required.
 2. That account and region bootstrapped for CDK:
    `npx cdk bootstrap aws://<account-id>/<region>` (run from `infra/`).
 3. Permission to create API Gateway, Lambda, DynamoDB, CloudWatch Logs and IAM
@@ -200,6 +201,26 @@ such. Only a pass against a deployed stage URL is deployment evidence.
 
 Account IDs, stack ARNs, API IDs and stage URLs are deployment outputs. They are
 never committed.
+
+## Data and synthetic seeds
+
+`services/data` contains the validated DynamoDB repositories. `services/shared`
+contains durable POST idempotency. Seed data is projected directly from the
+frozen `contracts/seeds/stories.json`; expected cases and risk events are truth
+metadata and are not preloaded.
+
+Seed commands hard-refuse production and require an explicit table. Reset also
+requires the table name as confirmation:
+
+```bash
+npm run seed:load -- --env dev --table returnshield-dev-core --region <region>
+npm run seed:verify -- --env dev --table returnshield-dev-core --region <region>
+npm run seed:reset -- --env dev --table returnshield-dev-core --region <region> --confirm returnshield-dev-core
+```
+
+For an isolated DynamoDB-compatible test endpoint, use `--env local`, the table
+name `returnshield-local-core`, and an explicit `--endpoint`. Endpoint overrides
+are rejected for AWS dev/test environments.
 
 ## Testing
 
@@ -231,5 +252,6 @@ From `CODING-RULES.md` in the planning vault:
 - `product/approval-gate.md` — the Phase 00 approval record
 - `product/handoff.md` — Phase 00 handoff and evidence
 - `product/phase-01-handoff.md` — Phase 01 handoff
+- `product/phase-02-handoff.md` — Phase 02 data and seed handoff
 - `contracts/api/semantics.md` — idempotency, paging and reviewer semantics
 - `contracts/risk/policy.md` — signals, weights, thresholds, clamping

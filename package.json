@@ -13,6 +13,8 @@
     "packages/*",
     "services/*",
     "apps/*",
+    "data/*",
+    "scripts/*",
     "infra"
   ],
   "scripts": {
@@ -31,6 +33,9 @@
     "dev": "npm run dev --workspace apps/web",
     "dev:api": "npm run dev --workspace services/health",
     "smoke": "node scripts/smoke.mjs",
+    "seed:load": "npm run build --workspace packages/contracts && npm run seed --workspace @returnshield/seed-tools -- load",
+    "seed:verify": "npm run build --workspace packages/contracts && npm run seed --workspace @returnshield/seed-tools -- verify",
+    "seed:reset": "npm run build --workspace packages/contracts && npm run seed --workspace @returnshield/seed-tools -- reset",
     "verify": "npm run format:check && npm run lint && npm run check:schemas && npm run typecheck && npm run test:unit && npm run test:contract && npm run build && npm run synth"
   },
   "devDependencies": {

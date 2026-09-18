@@ -13,6 +13,7 @@ export {
   type ApiErrorEnvelope,
   type ErrorCode,
   type ErrorDetail,
+  type EntityDefinitionName,
   type HealthResponse,
   type HttpDefinitionName,
   type SchemaVersion,
@@ -22,11 +23,14 @@ export {
 export {
   ContractViolationError,
   assertValid,
+  assertValidEntity,
   formatValidationErrors,
   getHttpValidator,
+  getEntityValidator,
   isApiErrorEnvelope,
   isHealthResponse,
   validateAgainst,
+  validateEntity,
   type ValidationResult,
 } from './validate.js';
 

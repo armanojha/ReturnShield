@@ -1,0 +1,32 @@
+{
+  "_comment": [
+    "Reference least-privilege IAM policy for a dedicated seed-tooling identity",
+    "(task P2-DB-01, consumed by task P2-SEED-02's scripts/seed/** tooling).",
+    "Not attached to anything automatically — this is documentation the",
+    "integrator can attach to an IAM user or role if they want scoped seed",
+    "credentials instead of full developer/admin AWS credentials.",
+    "Replace <REGION> and <ACCOUNT_ID>; only dev/test tables are listed",
+    "because scripts/seed/** hard-refuses production (see data/seed and",
+    "scripts/seed READMEs)."
+  ],
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReturnShieldSeedToolingDataAccess",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:Query",
+        "dynamodb:DescribeTable"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:<REGION>:<ACCOUNT_ID>:table/returnshield-dev-core",
+        "arn:aws:dynamodb:<REGION>:<ACCOUNT_ID>:table/returnshield-dev-core/index/*",
+        "arn:aws:dynamodb:<REGION>:<ACCOUNT_ID>:table/returnshield-test-core",
+        "arn:aws:dynamodb:<REGION>:<ACCOUNT_ID>:table/returnshield-test-core/index/*"
+      ]
+    }
+  ]
+}

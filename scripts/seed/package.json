@@ -1,0 +1,25 @@
+{
+  "name": "@returnshield/seed-tools",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Environment-guarded ReturnShield seed load/reset/verify tooling.",
+  "type": "module",
+  "scripts": {
+    "seed": "tsx src/cli.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:unit": "vitest run"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "3.687.0",
+    "@aws-sdk/lib-dynamodb": "3.687.0",
+    "@returnshield/data": "0.1.0",
+    "@returnshield/seed-data": "0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.16.11",
+    "tsx": "4.19.1",
+    "typescript": "5.6.3",
+    "vitest": "2.1.3"
+  }
+}

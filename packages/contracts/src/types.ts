@@ -79,3 +79,15 @@ export type HttpDefinitionName =
   | 'DashboardResponse'
   | 'DecisionRequest'
   | 'DecisionResponse';
+
+/** Named entity definitions in the frozen data contract. */
+export type EntityDefinitionName =
+  | 'Evidence'
+  | 'Seller'
+  | 'Listing'
+  | 'Customer'
+  | 'Order'
+  | 'TimelineEntry'
+  | 'ReviewerDisposition'
+  | 'RiskEvent'
+  | 'ReturnCase';

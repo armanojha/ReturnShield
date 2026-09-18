@@ -1,0 +1,23 @@
+{
+  "name": "@returnshield/data",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Validated DynamoDB repositories for ReturnShield operational entities.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:unit": "vitest run"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "3.687.0",
+    "@aws-sdk/lib-dynamodb": "3.687.0",
+    "@returnshield/contracts": "0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.16.11",
+    "typescript": "5.6.3",
+    "vitest": "2.1.3"
+  }
+}
