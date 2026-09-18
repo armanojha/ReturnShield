@@ -1,8 +1,9 @@
-# Phase 00 approval gate — awaiting human approval
+# Phase 00 approval gate — approved
 
 Review candidate tag: `phase-00-contracts-v1.0.0-candidate`.
+Approved baseline tag: `phase-00-contracts-v1.0.0`.
 
-The Phase 00 artifacts are authored and verified. **They are not yet approved. No Phase 01 work has begun.**
+The Phase 00 artifacts were explicitly approved by the user on 2026-09-18. The approval covers the candidate contract listed below without revisions. Phase 00 is complete. No Phase 01 work has begun in this approval record.
 
 Start with [scope](scope.md), [API semantics](../contracts/api/semantics.md), [risk policy](../contracts/risk/policy.md), and [seed truth](../contracts/seeds/truth.md). Full evidence is in [handoff](handoff.md).
 
@@ -26,4 +27,4 @@ Weights and thresholds come from the vault. Predicate cutoffs are proposed demo 
 
 Required gate source: `D:\PROJRCTS\returensheild_vault\PHASE-INDEX.md`: “Phase 00 requires human approval before application coding begins.” Phase 00 exit condition: “All Phase 0 artifacts are approved and no Phase 1 task depends on an unanswered decision.”
 
-To approve, explicitly approve this Phase 00 candidate; to revise, identify the decisions to change. The gate remains pending until that response. After approval, schema/policy/entity/architecture changes require an ADR plus dependent-task review.
+Approval evidence: user message, “i approve Phase 00”. After this approval, schema, policy, entity, threshold, seed-truth or architecture changes require an ADR plus dependent-task review.

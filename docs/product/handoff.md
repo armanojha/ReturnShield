@@ -1,6 +1,6 @@
 # Phase 00 integrator handoff
 
-Branch: `codex/phase-00-contract-lock`. Human approval: **PENDING**. Phase 01: **BLOCKED**.
+Branch: `codex/phase-00-contract-lock`. Human approval: **APPROVED 2026-09-18**. Phase 00: **DONE**. Phase 01: **READY, NOT STARTED**.
 
 The user's explicit request to produce Phase 00 in one session authorizes sequential execution of its six individually scoped tasks. No agents or overlapping owners are active. Each task owns only its listed document subtree; the integrator owns this handoff and verification tooling. Source files remain unchanged.
 
@@ -13,7 +13,7 @@ The user's explicit request to produce Phase 00 in one session authorizes sequen
 | 5 | P0-AI-01 | P0-CON-01 authored and reviewed before AI schema; combined reference verification passed | docs/contracts/ai/** | DONE |
 | 6 | P0-SEED-01 | P0-DATA-01 and P0-RISK-01 authored and reviewed before fixtures; seed verification passed | docs/contracts/seeds/** | DONE |
 
-DONE means artifact authoring and integrator contract checks complete, not human approval or application implementation. P0-PROD-01 review: scope, flow, tiers, cut order, conflicts and gate are explicit in scope.md.
+DONE means artifact authoring and integrator contract checks complete. The complete Phase 00 baseline received explicit human approval on 2026-09-18. P0-PROD-01 review: scope, flow, tiers, cut order, conflicts and gate are explicit in scope.md.
 
 ## Changed files and acceptance evidence
 
@@ -34,8 +34,8 @@ Negative fixture testing found optional date-time validation was unavailable in 
 
 ## Baseline and handoff
 
-Candidate tag: `phase-00-contracts-v1.0.0-candidate`. Resolve its commit with `git rev-parse phase-00-contracts-v1.0.0-candidate^{commit}`. The tag points at the final baseline commit and is a candidate marker, not human approval. baseline-manifest.json hashes every contract file using UTF-8 with LF-normalized newlines, so Windows Git newline conversion does not invalidate a fresh checkout. Final verifier result: 449 checks passed. source-manifest.json records raw-byte hashes of the available vault Markdown used as planning context. No source vault edits, application folders, dependencies, CI or AWS resources were created. No merge or push is performed.
+Candidate tag: `phase-00-contracts-v1.0.0-candidate`. Approved tag: `phase-00-contracts-v1.0.0`. The approved tag points at the approval-record commit. baseline-manifest.json hashes every contract file using UTF-8 with LF-normalized newlines, so Windows Git newline conversion does not invalidate a fresh checkout. Final verifier result: 449 checks passed. source-manifest.json records raw-byte hashes of the available vault Markdown used as planning context. No source vault edits, application folders, dependencies, CI or AWS resources were created. No merge or push is performed.
 
 Risks: the original PDF/report is unavailable; proposed triggers are synthetic demo policy, not empirically calibrated; source references contain conflicts explicitly reconciled in scope.md. JSON Schema cannot prove evidence semantics or arithmetic equality; the verifier covers the fixtures and the later production validator/evaluator must enforce the documented invariants for arbitrary inputs. Auth and deployment access controls require later runtime work.
 
-Next action: human review of approval-gate.md and the tagged candidate. Only after explicit approval may the integrator mark Phase 00 approved and claim P1-REP-01. All Phase 01 tasks remain PLANNED/BLOCKED until then.
+Next action: the integrator may claim P1-REP-01 and begin Phase 01 in a separately scoped task. Phase 01 has not started in this handoff.

@@ -1,6 +1,8 @@
 {
   "schema_version": "1.0.0",
   "candidate_tag": "phase-00-contracts-v1.0.0-candidate",
+  "approved_tag": "phase-00-contracts-v1.0.0",
+  "approved_on": "2026-09-18",
   "sha256": {
     "docs/contracts/ai/models.schema.json": "90c4c2a3a238bc7e551eb2fadd5b4592b41b14ae0d56e1bb3d1c0c3011411795",
     "docs/contracts/ai/validation-and-failure.md": "9d99bf9da3fcba91355a06cfae32e3bc424ff989cdbc146ed327748b5ee05c44",
@@ -10,7 +12,7 @@
     "docs/contracts/data/entities.schema.json": "020acec938e1e508bc7619cd07e98a9418e07aa21218430647a4fec4293ed21b",
     "docs/contracts/data/relationships.md": "a3d5459bf70c3f942bee2ae4e0a4403cf3f5adb0d802c898935576ac1dccd110",
     "docs/contracts/risk/evaluation.schema.json": "ec733aee4128a614913904402110a68c796153e704fd04a9b916a035c92e3218",
-    "docs/contracts/risk/policy.json": "2fe8531e0a5840ad823bddf7da622405ec1eb05981e3760d7ca2eaae11c82240",
+    "docs/contracts/risk/policy.json": "677c190b69ff1ea9212ccef7ec4155df09c7b7e8ec5641a961948d4175449a86",
     "docs/contracts/risk/policy.md": "d169885d435b062f9fcf439e46ec3d972bcd2fb41048b1c7500bde31c56f7a14",
     "docs/contracts/seeds/stories.json": "86d723e95c3bc316bc885633422f8b4a1df43d0088c1b003635523f49d09329f",
     "docs/contracts/seeds/truth.md": "7028200732775bd8c8db5a17a19d547f6869d51cdf43d4a5d6887e784ddc9225"

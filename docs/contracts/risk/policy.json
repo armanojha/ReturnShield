@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "policy_version": "1.0.0",
-  "approval_status": "PENDING",
+  "approval_status": "APPROVED",
   "signals": [
     {
       "signal": "seller",

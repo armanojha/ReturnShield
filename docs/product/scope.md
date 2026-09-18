@@ -1,6 +1,6 @@
 # ReturnShield — Phase 00 product contract
 
-Schema version: `1.0.0`. Status: approval candidate; application coding blocked.
+Schema version: `1.0.0`. Status: approved 2026-09-18; frozen baseline.
 
 ReturnShield is an API and operations system for marketplace trust and returns teams. The mock marketplace is a demonstration client. One React application will expose `/marketplace` and `/ops`; this phase creates no application skeleton.
 
@@ -36,4 +36,4 @@ Read from `D:\PROJRCTS\returensheild_vault`: PHASE-INDEX, CODING-RULES, Phase 00
 
 ## Change control and approval
 
-Human approval of the tagged candidate is required before Phase 01. Until then all choices are reviewable proposals. After approval, any schema, threshold, entity, policy or architecture change requires an ADR documenting rationale, compatibility/migration, affected tasks and integrator approval. Feature owners do not merge their own work.
+The tagged candidate received explicit human approval on 2026-09-18. Phase 01 may now begin. Any schema, threshold, entity, policy or architecture change requires an ADR documenting rationale, compatibility/migration, affected tasks and integrator approval. Feature owners do not merge their own work.
