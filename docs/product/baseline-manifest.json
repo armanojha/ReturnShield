@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "candidate_tag": "phase-00-contracts-v1.0.0-candidate",
+  "sha256": {
+    "docs/contracts/ai/models.schema.json": "6e5264d6274ddd81ecbee65b0941e573661f83fdeab6d6947fe77b313c356aad",
+    "docs/contracts/ai/validation-and-failure.md": "59032aae296e121c12d4dc2be732f0f0902d4ce51b18e427f425d9c7c304963e",
+    "docs/contracts/api/http.schema.json": "a83215c53fb4552ac8a5c43a36d5211a0b5e06a3172390e439deb5f46a3f1a91",
+    "docs/contracts/api/openapi.json": "a5fcd684c626d46bd45384583e7ebb9677b7e8051d771ec41dec9a39f3a89451",
+    "docs/contracts/api/semantics.md": "736983f57cfec6eba4e0ffe35426050e60eb0fe73acffa889ba783ea26db99a5",
+    "docs/contracts/data/entities.schema.json": "22a9a0c261464f8ae1843c8370888801089b347e0fe59a154333b735cb34eb1b",
+    "docs/contracts/data/relationships.md": "f1dff3de5b82902167957ae53c56a211f91b1cdee01d91181f174a00c47f7801",
+    "docs/contracts/risk/evaluation.schema.json": "d2d0100b75bf7f58c26f3e31ef9cca0d2d6368ab095c4bca33d819f9fe1c65d7",
+    "docs/contracts/risk/policy.json": "47b440a7cb1546c2b71988847412016cff555e0d8bcbd1157c8b41ce364f62cb",
+    "docs/contracts/risk/policy.md": "95be9eec2e5eee1b3473378dac6b48a99ae8a03268adefa616f28cdf7951cc46",
+    "docs/contracts/seeds/stories.json": "c51b900b473b47dacb912a4f32d8c611eb95cff07f2a6ae069ee79e216cf3806",
+    "docs/contracts/seeds/truth.md": "5547269e49c4c8d78f08931177b561936a361c0df047e5152e1f004ad86eefa4"
+  }
+}

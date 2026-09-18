@@ -1,0 +1,334 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://returnshield.example/contracts/ai/models.schema.json",
+  "$defs": {
+    "ListingGuardInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "category": {
+          "enum": [
+            "APPAREL",
+            "ELECTRONICS",
+            "HOME"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "title",
+        "description",
+        "category"
+      ]
+    },
+    "ListingGuardOutput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "CORRECTION_REQUIRED"
+          ]
+        },
+        "severity": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "issue_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "issue_id",
+              "description",
+              "evidence_refs"
+            ]
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "evidence_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+              },
+              "field": {
+                "enum": [
+                  "title",
+                  "description",
+                  "category"
+                ]
+              },
+              "quote": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "evidence_id",
+              "field",
+              "quote"
+            ]
+          }
+        },
+        "recommended_action": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        }
+      },
+      "required": [
+        "schema_version",
+        "status",
+        "severity",
+        "issues",
+        "evidence",
+        "recommended_action"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "PASS"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "severity": {
+                "const": "low"
+              },
+              "issues": {
+                "maxItems": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "severity": {
+                "enum": [
+                  "medium",
+                  "high"
+                ]
+              },
+              "issues": {
+                "minItems": 1
+              },
+              "evidence": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "InvestigatorInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "case_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "policy_result": {
+          "$ref": "https://returnshield.example/contracts/risk/evaluation.schema.json#/$defs/Result"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "https://returnshield.example/contracts/data/entities.schema.json#/$defs/Evidence"
+          }
+        },
+        "allowed_evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schema_version",
+        "case_id",
+        "policy_result",
+        "evidence",
+        "allowed_evidence_ids"
+      ]
+    },
+    "InvestigatorOutput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "factors": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "signal": {
+                "enum": [
+                  "seller",
+                  "listing",
+                  "customer",
+                  "return",
+                  "category"
+                ]
+              },
+              "explanation": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "signal",
+              "explanation",
+              "evidence_refs"
+            ]
+          }
+        },
+        "recommended_action": {
+          "const": "HUMAN_REVIEW"
+        }
+      },
+      "required": [
+        "schema_version",
+        "summary",
+        "factors",
+        "recommended_action"
+      ]
+    },
+    "ReviewEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "event_type": {
+          "const": "RETURN_NEEDS_REVIEW"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "case_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "order_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "seller_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "listing_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "policy_version": {
+          "const": "1.0.0"
+        },
+        "risk_score": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 100
+        },
+        "priority": {
+          "enum": [
+            "NORMAL",
+            "HIGH"
+          ]
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_type",
+        "event_id",
+        "case_id",
+        "order_id",
+        "seller_id",
+        "listing_id",
+        "policy_version",
+        "risk_score",
+        "priority",
+        "occurred_at"
+      ]
+    }
+  }
+}

@@ -1,0 +1,1037 @@
+{
+  "schema_version": "1.0.0",
+  "stories": [
+    {
+      "schema_version": "1.0.0",
+      "story_id": "clean",
+      "evaluation_at": "2026-09-01T12:00:00Z",
+      "history_complete": true,
+      "seller": {
+        "schema_version": "1.0.0",
+        "seller_id": "SELLER-clean",
+        "trust_score": 95,
+        "listing_flags": 0,
+        "return_rate": 0.02,
+        "dispute_count": 0,
+        "cases": []
+      },
+      "listing": {
+        "schema_version": "1.0.0",
+        "listing_id": "LISTING-clean",
+        "seller_id": "SELLER-clean",
+        "title": "Cotton shirt",
+        "description": "Unopened item matching the title.",
+        "category": "APPAREL",
+        "listing_risk": "low",
+        "status": "PASS",
+        "analysis": {
+          "schema_version": "1.0.0",
+          "status": "PASS",
+          "severity": "low",
+          "issues": [],
+          "evidence": [],
+          "recommended_action": "No correction required."
+        },
+        "analysis_metadata": {
+          "model_id": "synthetic-fixture",
+          "prompt_version": "1.0.0",
+          "schema_version": "1.0.0",
+          "validation_result": "VALID",
+          "correlation_id": "CORR-clean"
+        },
+        "created_at": "2026-08-01T00:00:00Z"
+      },
+      "customer": {
+        "schema_version": "1.0.0",
+        "customer_id": "CUSTOMER-clean",
+        "return_count": 0,
+        "recent_returns": 0,
+        "account_age_days": 365,
+        "case_history": []
+      },
+      "order": {
+        "schema_version": "1.0.0",
+        "order_id": "ORDER-clean",
+        "seller_id": "SELLER-clean",
+        "customer_id": "CUSTOMER-clean",
+        "listing_id": "LISTING-clean",
+        "timestamp": "2026-08-20T00:00:00Z",
+        "status": "DELIVERED",
+        "delivered_at": "2026-08-25T00:00:00Z"
+      },
+      "request": {
+        "schema_version": "1.0.0",
+        "order_id": "ORDER-clean",
+        "reason": "CHANGED_MIND",
+        "evidence": [
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-clean-statement",
+            "kind": "RETURN_STATEMENT",
+            "source_id": "ORDER-clean",
+            "text": "Synthetic return reason: CHANGED_MIND",
+            "observed_at": "2026-09-01T12:00:00Z"
+          }
+        ]
+      },
+      "expected_risk_result": {
+        "schema_version": "1.0.0",
+        "policy_version": "1.0.0",
+        "raw_contribution_total": 0,
+        "score": 0,
+        "decision": "AUTO_APPROVE",
+        "priority": "NONE",
+        "contributions": [
+          {
+            "schema_version": "1.0.0",
+            "signal": "seller",
+            "points": 0,
+            "max": 30,
+            "reason": "Prior 90-day return_rate=0.02; dispute_count=0; complete synthetic history. Rule: seller.return_rate >= 0.20 OR seller.dispute_count >= 3",
+            "evidence_refs": [
+              "EV-clean-seller"
+            ]
+          },
+          {
+            "schema_version": "1.0.0",
+            "signal": "listing",
+            "points": 0,
+            "max": 25,
+            "reason": "Validated listing status=PASS. Rule: listing.status == CORRECTION_REQUIRED",
+            "evidence_refs": [
+              "EV-clean-listing"
+            ]
+          },
+          {
+            "schema_version": "1.0.0",
+            "signal": "customer",
+            "points": 0,
+            "max": 20,
+            "reason": "Prior 30-day recent_returns=0; complete synthetic history. Rule: customer.recent_returns >= 3",
+            "evidence_refs": [
+              "EV-clean-customer"
+            ]
+          },
+          {
+            "schema_version": "1.0.0",
+            "signal": "return",
+            "points": 0,
+            "max": 20,
+            "reason": "Order status=DELIVERED; submitted reason=CHANGED_MIND. Rule: request.reason == NOT_RECEIVED AND order.status == DELIVERED",
+            "evidence_refs": [
+              "EV-clean-return"
+            ]
+          },
+          {
+            "schema_version": "1.0.0",
+            "signal": "category",
+            "points": 0,
+            "max": 15,
+            "reason": "Listing category=APPAREL; policy 1.0.0 adds 15 only for ELECTRONICS. Rule: listing.category == ELECTRONICS",
+            "evidence_refs": [
+              "EV-clean-category"
+            ]
+          }
+        ]
+      },
+      "expected_case": {
+        "schema_version": "1.0.0",
+        "case_id": "CASE-clean",
+        "order_id": "ORDER-clean",
+        "seller_id": "SELLER-clean",
+        "listing_id": "LISTING-clean",
+        "customer_id": "CUSTOMER-clean",
+        "reason": "CHANGED_MIND",
+        "evidence": [
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-clean-seller",
+            "kind": "SELLER_HISTORY",
+            "source_id": "SELLER-clean",
+            "text": "Prior 90-day return_rate=0.02; dispute_count=0; complete synthetic history.",
+            "observed_at": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-clean-listing",
+            "kind": "LISTING_CONTENT",
+            "source_id": "LISTING-clean",
+            "text": "Validated listing status=PASS.",
+            "observed_at": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-clean-customer",
+            "kind": "CUSTOMER_HISTORY",
+            "source_id": "CUSTOMER-clean",
+            "text": "Prior 30-day recent_returns=0; complete synthetic history.",
+            "observed_at": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-clean-return",
+            "kind": "ORDER_RECORD",
+            "source_id": "ORDER-clean",
+            "text": "Order status=DELIVERED; submitted reason=CHANGED_MIND.",
+            "observed_at": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-clean-category",
+            "kind": "CATEGORY_POLICY",
+            "source_id": "LISTING-clean",
+            "text": "Listing category=APPAREL; policy 1.0.0 adds 15 only for ELECTRONICS.",
+            "observed_at": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-clean-statement",
+            "kind": "RETURN_STATEMENT",
+            "source_id": "ORDER-clean",
+            "text": "Synthetic return reason: CHANGED_MIND",
+            "observed_at": "2026-09-01T12:00:00Z"
+          }
+        ],
+        "status": "DECIDED",
+        "revision": 2,
+        "raw_contribution_total": 0,
+        "risk_score": 0,
+        "policy_version": "1.0.0",
+        "decision": "AUTO_APPROVE",
+        "priority": "NONE",
+        "contributions": [
+          {
+            "schema_version": "1.0.0",
+            "risk_event_id": "CASE-clean-seller",
+            "case_id": "CASE-clean",
+            "signal": "seller",
+            "contribution": 0,
+            "max": 30,
+            "reason": "Prior 90-day return_rate=0.02; dispute_count=0; complete synthetic history. Rule: seller.return_rate >= 0.20 OR seller.dispute_count >= 3",
+            "evidence_refs": [
+              "EV-clean-seller"
+            ],
+            "source": "seller-history",
+            "policy_version": "1.0.0",
+            "timestamp": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "risk_event_id": "CASE-clean-listing",
+            "case_id": "CASE-clean",
+            "signal": "listing",
+            "contribution": 0,
+            "max": 25,
+            "reason": "Validated listing status=PASS. Rule: listing.status == CORRECTION_REQUIRED",
+            "evidence_refs": [
+              "EV-clean-listing"
+            ],
+            "source": "listing-analysis",
+            "policy_version": "1.0.0",
+            "timestamp": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "risk_event_id": "CASE-clean-customer",
+            "case_id": "CASE-clean",
+            "signal": "customer",
+            "contribution": 0,
+            "max": 20,
+            "reason": "Prior 30-day recent_returns=0; complete synthetic history. Rule: customer.recent_returns >= 3",
+            "evidence_refs": [
+              "EV-clean-customer"
+            ],
+            "source": "customer-history",
+            "policy_version": "1.0.0",
+            "timestamp": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "risk_event_id": "CASE-clean-return",
+            "case_id": "CASE-clean",
+            "signal": "return",
+            "contribution": 0,
+            "max": 20,
+            "reason": "Order status=DELIVERED; submitted reason=CHANGED_MIND. Rule: request.reason == NOT_RECEIVED AND order.status == DELIVERED",
+            "evidence_refs": [
+              "EV-clean-return"
+            ],
+            "source": "order-return",
+            "policy_version": "1.0.0",
+            "timestamp": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "risk_event_id": "CASE-clean-category",
+            "case_id": "CASE-clean",
+            "signal": "category",
+            "contribution": 0,
+            "max": 15,
+            "reason": "Listing category=APPAREL; policy 1.0.0 adds 15 only for ELECTRONICS. Rule: listing.category == ELECTRONICS",
+            "evidence_refs": [
+              "EV-clean-category"
+            ],
+            "source": "category-policy",
+            "policy_version": "1.0.0",
+            "timestamp": "2026-09-01T12:00:00Z"
+          }
+        ],
+        "review_status": "NOT_APPLICABLE",
+        "reviewer_disposition": null,
+        "explanation_status": "NOT_REQUESTED",
+        "explanation": null,
+        "error": null,
+        "timeline": [
+          {
+            "schema_version": "1.0.0",
+            "event_id": "CASE-clean-RETURN_RECEIVED",
+            "case_id": "CASE-clean",
+            "timestamp": "2026-09-01T12:00:00Z",
+            "type": "RETURN_RECEIVED",
+            "actor_id": "SYSTEM",
+            "message": "RETURN_RECEIVED"
+          },
+          {
+            "schema_version": "1.0.0",
+            "event_id": "CASE-clean-POLICY_DECIDED",
+            "case_id": "CASE-clean",
+            "timestamp": "2026-09-01T12:00:00Z",
+            "type": "POLICY_DECIDED",
+            "actor_id": "SYSTEM",
+            "message": "POLICY_DECIDED"
+          }
+        ],
+        "created_at": "2026-09-01T12:00:00Z",
+        "updated_at": "2026-09-01T12:00:00Z"
+      },
+      "expected_review_event": false
+    },
+    {
+      "schema_version": "1.0.0",
+      "story_id": "review",
+      "evaluation_at": "2026-09-01T12:00:00Z",
+      "history_complete": true,
+      "seller": {
+        "schema_version": "1.0.0",
+        "seller_id": "SELLER-review",
+        "trust_score": 50,
+        "listing_flags": 0,
+        "return_rate": 0.25,
+        "dispute_count": 3,
+        "cases": []
+      },
+      "listing": {
+        "schema_version": "1.0.0",
+        "listing_id": "LISTING-review",
+        "seller_id": "SELLER-review",
+        "title": "Wireless headphones",
+        "description": "Unopened item matching the title.",
+        "category": "ELECTRONICS",
+        "listing_risk": "low",
+        "status": "PASS",
+        "analysis": {
+          "schema_version": "1.0.0",
+          "status": "PASS",
+          "severity": "low",
+          "issues": [],
+          "evidence": [],
+          "recommended_action": "No correction required."
+        },
+        "analysis_metadata": {
+          "model_id": "synthetic-fixture",
+          "prompt_version": "1.0.0",
+          "schema_version": "1.0.0",
+          "validation_result": "VALID",
+          "correlation_id": "CORR-review"
+        },
+        "created_at": "2026-08-01T00:00:00Z"
+      },
+      "customer": {
+        "schema_version": "1.0.0",
+        "customer_id": "CUSTOMER-review",
+        "return_count": 0,
+        "recent_returns": 0,
+        "account_age_days": 365,
+        "case_history": []
+      },
+      "order": {
+        "schema_version": "1.0.0",
+        "order_id": "ORDER-review",
+        "seller_id": "SELLER-review",
+        "customer_id": "CUSTOMER-review",
+        "listing_id": "LISTING-review",
+        "timestamp": "2026-08-20T00:00:00Z",
+        "status": "DELIVERED",
+        "delivered_at": "2026-08-25T00:00:00Z"
+      },
+      "request": {
+        "schema_version": "1.0.0",
+        "order_id": "ORDER-review",
+        "reason": "CHANGED_MIND",
+        "evidence": [
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-review-statement",
+            "kind": "RETURN_STATEMENT",
+            "source_id": "ORDER-review",
+            "text": "Synthetic return reason: CHANGED_MIND",
+            "observed_at": "2026-09-01T12:00:00Z"
+          }
+        ]
+      },
+      "expected_risk_result": {
+        "schema_version": "1.0.0",
+        "policy_version": "1.0.0",
+        "raw_contribution_total": 45,
+        "score": 45,
+        "decision": "NEEDS_REVIEW",
+        "priority": "NORMAL",
+        "contributions": [
+          {
+            "schema_version": "1.0.0",
+            "signal": "seller",
+            "points": 30,
+            "max": 30,
+            "reason": "Prior 90-day return_rate=0.25; dispute_count=3; complete synthetic history. Rule: seller.return_rate >= 0.20 OR seller.dispute_count >= 3",
+            "evidence_refs": [
+              "EV-review-seller"
+            ]
+          },
+          {
+            "schema_version": "1.0.0",
+            "signal": "listing",
+            "points": 0,
+            "max": 25,
+            "reason": "Validated listing status=PASS. Rule: listing.status == CORRECTION_REQUIRED",
+            "evidence_refs": [
+              "EV-review-listing"
+            ]
+          },
+          {
+            "schema_version": "1.0.0",
+            "signal": "customer",
+            "points": 0,
+            "max": 20,
+            "reason": "Prior 30-day recent_returns=0; complete synthetic history. Rule: customer.recent_returns >= 3",
+            "evidence_refs": [
+              "EV-review-customer"
+            ]
+          },
+          {
+            "schema_version": "1.0.0",
+            "signal": "return",
+            "points": 0,
+            "max": 20,
+            "reason": "Order status=DELIVERED; submitted reason=CHANGED_MIND. Rule: request.reason == NOT_RECEIVED AND order.status == DELIVERED",
+            "evidence_refs": [
+              "EV-review-return"
+            ]
+          },
+          {
+            "schema_version": "1.0.0",
+            "signal": "category",
+            "points": 15,
+            "max": 15,
+            "reason": "Listing category=ELECTRONICS; policy 1.0.0 adds 15 only for ELECTRONICS. Rule: listing.category == ELECTRONICS",
+            "evidence_refs": [
+              "EV-review-category"
+            ]
+          }
+        ]
+      },
+      "expected_case": {
+        "schema_version": "1.0.0",
+        "case_id": "CASE-review",
+        "order_id": "ORDER-review",
+        "seller_id": "SELLER-review",
+        "listing_id": "LISTING-review",
+        "customer_id": "CUSTOMER-review",
+        "reason": "CHANGED_MIND",
+        "evidence": [
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-review-seller",
+            "kind": "SELLER_HISTORY",
+            "source_id": "SELLER-review",
+            "text": "Prior 90-day return_rate=0.25; dispute_count=3; complete synthetic history.",
+            "observed_at": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-review-listing",
+            "kind": "LISTING_CONTENT",
+            "source_id": "LISTING-review",
+            "text": "Validated listing status=PASS.",
+            "observed_at": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-review-customer",
+            "kind": "CUSTOMER_HISTORY",
+            "source_id": "CUSTOMER-review",
+            "text": "Prior 30-day recent_returns=0; complete synthetic history.",
+            "observed_at": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-review-return",
+            "kind": "ORDER_RECORD",
+            "source_id": "ORDER-review",
+            "text": "Order status=DELIVERED; submitted reason=CHANGED_MIND.",
+            "observed_at": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-review-category",
+            "kind": "CATEGORY_POLICY",
+            "source_id": "LISTING-review",
+            "text": "Listing category=ELECTRONICS; policy 1.0.0 adds 15 only for ELECTRONICS.",
+            "observed_at": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-review-statement",
+            "kind": "RETURN_STATEMENT",
+            "source_id": "ORDER-review",
+            "text": "Synthetic return reason: CHANGED_MIND",
+            "observed_at": "2026-09-01T12:00:00Z"
+          }
+        ],
+        "status": "DECIDED",
+        "revision": 4,
+        "raw_contribution_total": 45,
+        "risk_score": 45,
+        "policy_version": "1.0.0",
+        "decision": "NEEDS_REVIEW",
+        "priority": "NORMAL",
+        "contributions": [
+          {
+            "schema_version": "1.0.0",
+            "risk_event_id": "CASE-review-seller",
+            "case_id": "CASE-review",
+            "signal": "seller",
+            "contribution": 30,
+            "max": 30,
+            "reason": "Prior 90-day return_rate=0.25; dispute_count=3; complete synthetic history. Rule: seller.return_rate >= 0.20 OR seller.dispute_count >= 3",
+            "evidence_refs": [
+              "EV-review-seller"
+            ],
+            "source": "seller-history",
+            "policy_version": "1.0.0",
+            "timestamp": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "risk_event_id": "CASE-review-listing",
+            "case_id": "CASE-review",
+            "signal": "listing",
+            "contribution": 0,
+            "max": 25,
+            "reason": "Validated listing status=PASS. Rule: listing.status == CORRECTION_REQUIRED",
+            "evidence_refs": [
+              "EV-review-listing"
+            ],
+            "source": "listing-analysis",
+            "policy_version": "1.0.0",
+            "timestamp": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "risk_event_id": "CASE-review-customer",
+            "case_id": "CASE-review",
+            "signal": "customer",
+            "contribution": 0,
+            "max": 20,
+            "reason": "Prior 30-day recent_returns=0; complete synthetic history. Rule: customer.recent_returns >= 3",
+            "evidence_refs": [
+              "EV-review-customer"
+            ],
+            "source": "customer-history",
+            "policy_version": "1.0.0",
+            "timestamp": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "risk_event_id": "CASE-review-return",
+            "case_id": "CASE-review",
+            "signal": "return",
+            "contribution": 0,
+            "max": 20,
+            "reason": "Order status=DELIVERED; submitted reason=CHANGED_MIND. Rule: request.reason == NOT_RECEIVED AND order.status == DELIVERED",
+            "evidence_refs": [
+              "EV-review-return"
+            ],
+            "source": "order-return",
+            "policy_version": "1.0.0",
+            "timestamp": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "risk_event_id": "CASE-review-category",
+            "case_id": "CASE-review",
+            "signal": "category",
+            "contribution": 15,
+            "max": 15,
+            "reason": "Listing category=ELECTRONICS; policy 1.0.0 adds 15 only for ELECTRONICS. Rule: listing.category == ELECTRONICS",
+            "evidence_refs": [
+              "EV-review-category"
+            ],
+            "source": "category-policy",
+            "policy_version": "1.0.0",
+            "timestamp": "2026-09-01T12:00:00Z"
+          }
+        ],
+        "review_status": "OPEN",
+        "reviewer_disposition": null,
+        "explanation_status": "AVAILABLE",
+        "explanation": {
+          "schema_version": "1.0.0",
+          "summary": "Supplied synthetic evidence supports human review.",
+          "factors": [
+            {
+              "signal": "seller",
+              "explanation": "Prior 90-day return_rate=0.25; dispute_count=3; complete synthetic history. Rule: seller.return_rate >= 0.20 OR seller.dispute_count >= 3",
+              "evidence_refs": [
+                "EV-review-seller"
+              ]
+            },
+            {
+              "signal": "category",
+              "explanation": "Listing category=ELECTRONICS; policy 1.0.0 adds 15 only for ELECTRONICS. Rule: listing.category == ELECTRONICS",
+              "evidence_refs": [
+                "EV-review-category"
+              ]
+            }
+          ],
+          "recommended_action": "HUMAN_REVIEW"
+        },
+        "error": null,
+        "timeline": [
+          {
+            "schema_version": "1.0.0",
+            "event_id": "CASE-review-RETURN_RECEIVED",
+            "case_id": "CASE-review",
+            "timestamp": "2026-09-01T12:00:00Z",
+            "type": "RETURN_RECEIVED",
+            "actor_id": "SYSTEM",
+            "message": "RETURN_RECEIVED"
+          },
+          {
+            "schema_version": "1.0.0",
+            "event_id": "CASE-review-POLICY_DECIDED",
+            "case_id": "CASE-review",
+            "timestamp": "2026-09-01T12:00:00Z",
+            "type": "POLICY_DECIDED",
+            "actor_id": "SYSTEM",
+            "message": "POLICY_DECIDED"
+          },
+          {
+            "schema_version": "1.0.0",
+            "event_id": "CASE-review-REVIEW_REQUESTED",
+            "case_id": "CASE-review",
+            "timestamp": "2026-09-01T12:00:00Z",
+            "type": "REVIEW_REQUESTED",
+            "actor_id": "SYSTEM",
+            "message": "REVIEW_REQUESTED"
+          },
+          {
+            "schema_version": "1.0.0",
+            "event_id": "CASE-review-EXPLANATION_AVAILABLE",
+            "case_id": "CASE-review",
+            "timestamp": "2026-09-01T12:00:00Z",
+            "type": "EXPLANATION_AVAILABLE",
+            "actor_id": "SYSTEM",
+            "message": "EXPLANATION_AVAILABLE"
+          }
+        ],
+        "created_at": "2026-09-01T12:00:00Z",
+        "updated_at": "2026-09-01T12:00:00Z"
+      },
+      "expected_review_event": true
+    },
+    {
+      "schema_version": "1.0.0",
+      "story_id": "high",
+      "evaluation_at": "2026-09-01T12:00:00Z",
+      "history_complete": true,
+      "seller": {
+        "schema_version": "1.0.0",
+        "seller_id": "SELLER-high",
+        "trust_score": 50,
+        "listing_flags": 1,
+        "return_rate": 0.25,
+        "dispute_count": 3,
+        "cases": []
+      },
+      "listing": {
+        "schema_version": "1.0.0",
+        "listing_id": "LISTING-high",
+        "seller_id": "SELLER-high",
+        "title": "Brand new sealed headphones",
+        "description": "Used headphones with scratches.",
+        "category": "ELECTRONICS",
+        "listing_risk": "high",
+        "status": "CORRECTION_REQUIRED",
+        "analysis": {
+          "schema_version": "1.0.0",
+          "status": "CORRECTION_REQUIRED",
+          "severity": "high",
+          "issues": [
+            {
+              "issue_id": "ISSUE-condition",
+              "description": "New and used condition claims conflict.",
+              "evidence_refs": [
+                "LG-title",
+                "LG-description"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "evidence_id": "LG-title",
+              "field": "title",
+              "quote": "Brand new sealed headphones"
+            },
+            {
+              "evidence_id": "LG-description",
+              "field": "description",
+              "quote": "Used headphones with scratches."
+            }
+          ],
+          "recommended_action": "Correct contradictory condition claims."
+        },
+        "analysis_metadata": {
+          "model_id": "synthetic-fixture",
+          "prompt_version": "1.0.0",
+          "schema_version": "1.0.0",
+          "validation_result": "VALID",
+          "correlation_id": "CORR-high"
+        },
+        "created_at": "2026-08-01T00:00:00Z"
+      },
+      "customer": {
+        "schema_version": "1.0.0",
+        "customer_id": "CUSTOMER-high",
+        "return_count": 4,
+        "recent_returns": 3,
+        "account_age_days": 365,
+        "case_history": []
+      },
+      "order": {
+        "schema_version": "1.0.0",
+        "order_id": "ORDER-high",
+        "seller_id": "SELLER-high",
+        "customer_id": "CUSTOMER-high",
+        "listing_id": "LISTING-high",
+        "timestamp": "2026-08-20T00:00:00Z",
+        "status": "DELIVERED",
+        "delivered_at": "2026-08-25T00:00:00Z"
+      },
+      "request": {
+        "schema_version": "1.0.0",
+        "order_id": "ORDER-high",
+        "reason": "NOT_RECEIVED",
+        "evidence": [
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-high-statement",
+            "kind": "RETURN_STATEMENT",
+            "source_id": "ORDER-high",
+            "text": "Synthetic return reason: NOT_RECEIVED",
+            "observed_at": "2026-09-01T12:00:00Z"
+          }
+        ]
+      },
+      "expected_risk_result": {
+        "schema_version": "1.0.0",
+        "policy_version": "1.0.0",
+        "raw_contribution_total": 110,
+        "score": 100,
+        "decision": "NEEDS_REVIEW",
+        "priority": "HIGH",
+        "contributions": [
+          {
+            "schema_version": "1.0.0",
+            "signal": "seller",
+            "points": 30,
+            "max": 30,
+            "reason": "Prior 90-day return_rate=0.25; dispute_count=3; complete synthetic history. Rule: seller.return_rate >= 0.20 OR seller.dispute_count >= 3",
+            "evidence_refs": [
+              "EV-high-seller"
+            ]
+          },
+          {
+            "schema_version": "1.0.0",
+            "signal": "listing",
+            "points": 25,
+            "max": 25,
+            "reason": "Validated listing status=CORRECTION_REQUIRED. Rule: listing.status == CORRECTION_REQUIRED",
+            "evidence_refs": [
+              "EV-high-listing"
+            ]
+          },
+          {
+            "schema_version": "1.0.0",
+            "signal": "customer",
+            "points": 20,
+            "max": 20,
+            "reason": "Prior 30-day recent_returns=3; complete synthetic history. Rule: customer.recent_returns >= 3",
+            "evidence_refs": [
+              "EV-high-customer"
+            ]
+          },
+          {
+            "schema_version": "1.0.0",
+            "signal": "return",
+            "points": 20,
+            "max": 20,
+            "reason": "Order status=DELIVERED; submitted reason=NOT_RECEIVED. Rule: request.reason == NOT_RECEIVED AND order.status == DELIVERED",
+            "evidence_refs": [
+              "EV-high-return"
+            ]
+          },
+          {
+            "schema_version": "1.0.0",
+            "signal": "category",
+            "points": 15,
+            "max": 15,
+            "reason": "Listing category=ELECTRONICS; policy 1.0.0 adds 15 only for ELECTRONICS. Rule: listing.category == ELECTRONICS",
+            "evidence_refs": [
+              "EV-high-category"
+            ]
+          }
+        ]
+      },
+      "expected_case": {
+        "schema_version": "1.0.0",
+        "case_id": "CASE-high",
+        "order_id": "ORDER-high",
+        "seller_id": "SELLER-high",
+        "listing_id": "LISTING-high",
+        "customer_id": "CUSTOMER-high",
+        "reason": "NOT_RECEIVED",
+        "evidence": [
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-high-seller",
+            "kind": "SELLER_HISTORY",
+            "source_id": "SELLER-high",
+            "text": "Prior 90-day return_rate=0.25; dispute_count=3; complete synthetic history.",
+            "observed_at": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-high-listing",
+            "kind": "LISTING_CONTENT",
+            "source_id": "LISTING-high",
+            "text": "Validated listing status=CORRECTION_REQUIRED.",
+            "observed_at": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-high-customer",
+            "kind": "CUSTOMER_HISTORY",
+            "source_id": "CUSTOMER-high",
+            "text": "Prior 30-day recent_returns=3; complete synthetic history.",
+            "observed_at": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-high-return",
+            "kind": "ORDER_RECORD",
+            "source_id": "ORDER-high",
+            "text": "Order status=DELIVERED; submitted reason=NOT_RECEIVED.",
+            "observed_at": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-high-category",
+            "kind": "CATEGORY_POLICY",
+            "source_id": "LISTING-high",
+            "text": "Listing category=ELECTRONICS; policy 1.0.0 adds 15 only for ELECTRONICS.",
+            "observed_at": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "evidence_id": "EV-high-statement",
+            "kind": "RETURN_STATEMENT",
+            "source_id": "ORDER-high",
+            "text": "Synthetic return reason: NOT_RECEIVED",
+            "observed_at": "2026-09-01T12:00:00Z"
+          }
+        ],
+        "status": "DECIDED",
+        "revision": 4,
+        "raw_contribution_total": 110,
+        "risk_score": 100,
+        "policy_version": "1.0.0",
+        "decision": "NEEDS_REVIEW",
+        "priority": "HIGH",
+        "contributions": [
+          {
+            "schema_version": "1.0.0",
+            "risk_event_id": "CASE-high-seller",
+            "case_id": "CASE-high",
+            "signal": "seller",
+            "contribution": 30,
+            "max": 30,
+            "reason": "Prior 90-day return_rate=0.25; dispute_count=3; complete synthetic history. Rule: seller.return_rate >= 0.20 OR seller.dispute_count >= 3",
+            "evidence_refs": [
+              "EV-high-seller"
+            ],
+            "source": "seller-history",
+            "policy_version": "1.0.0",
+            "timestamp": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "risk_event_id": "CASE-high-listing",
+            "case_id": "CASE-high",
+            "signal": "listing",
+            "contribution": 25,
+            "max": 25,
+            "reason": "Validated listing status=CORRECTION_REQUIRED. Rule: listing.status == CORRECTION_REQUIRED",
+            "evidence_refs": [
+              "EV-high-listing"
+            ],
+            "source": "listing-analysis",
+            "policy_version": "1.0.0",
+            "timestamp": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "risk_event_id": "CASE-high-customer",
+            "case_id": "CASE-high",
+            "signal": "customer",
+            "contribution": 20,
+            "max": 20,
+            "reason": "Prior 30-day recent_returns=3; complete synthetic history. Rule: customer.recent_returns >= 3",
+            "evidence_refs": [
+              "EV-high-customer"
+            ],
+            "source": "customer-history",
+            "policy_version": "1.0.0",
+            "timestamp": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "risk_event_id": "CASE-high-return",
+            "case_id": "CASE-high",
+            "signal": "return",
+            "contribution": 20,
+            "max": 20,
+            "reason": "Order status=DELIVERED; submitted reason=NOT_RECEIVED. Rule: request.reason == NOT_RECEIVED AND order.status == DELIVERED",
+            "evidence_refs": [
+              "EV-high-return"
+            ],
+            "source": "order-return",
+            "policy_version": "1.0.0",
+            "timestamp": "2026-09-01T12:00:00Z"
+          },
+          {
+            "schema_version": "1.0.0",
+            "risk_event_id": "CASE-high-category",
+            "case_id": "CASE-high",
+            "signal": "category",
+            "contribution": 15,
+            "max": 15,
+            "reason": "Listing category=ELECTRONICS; policy 1.0.0 adds 15 only for ELECTRONICS. Rule: listing.category == ELECTRONICS",
+            "evidence_refs": [
+              "EV-high-category"
+            ],
+            "source": "category-policy",
+            "policy_version": "1.0.0",
+            "timestamp": "2026-09-01T12:00:00Z"
+          }
+        ],
+        "review_status": "OPEN",
+        "reviewer_disposition": null,
+        "explanation_status": "AVAILABLE",
+        "explanation": {
+          "schema_version": "1.0.0",
+          "summary": "Supplied synthetic evidence supports human review.",
+          "factors": [
+            {
+              "signal": "seller",
+              "explanation": "Prior 90-day return_rate=0.25; dispute_count=3; complete synthetic history. Rule: seller.return_rate >= 0.20 OR seller.dispute_count >= 3",
+              "evidence_refs": [
+                "EV-high-seller"
+              ]
+            },
+            {
+              "signal": "listing",
+              "explanation": "Validated listing status=CORRECTION_REQUIRED. Rule: listing.status == CORRECTION_REQUIRED",
+              "evidence_refs": [
+                "EV-high-listing"
+              ]
+            },
+            {
+              "signal": "customer",
+              "explanation": "Prior 30-day recent_returns=3; complete synthetic history. Rule: customer.recent_returns >= 3",
+              "evidence_refs": [
+                "EV-high-customer"
+              ]
+            },
+            {
+              "signal": "return",
+              "explanation": "Order status=DELIVERED; submitted reason=NOT_RECEIVED. Rule: request.reason == NOT_RECEIVED AND order.status == DELIVERED",
+              "evidence_refs": [
+                "EV-high-return"
+              ]
+            },
+            {
+              "signal": "category",
+              "explanation": "Listing category=ELECTRONICS; policy 1.0.0 adds 15 only for ELECTRONICS. Rule: listing.category == ELECTRONICS",
+              "evidence_refs": [
+                "EV-high-category"
+              ]
+            }
+          ],
+          "recommended_action": "HUMAN_REVIEW"
+        },
+        "error": null,
+        "timeline": [
+          {
+            "schema_version": "1.0.0",
+            "event_id": "CASE-high-RETURN_RECEIVED",
+            "case_id": "CASE-high",
+            "timestamp": "2026-09-01T12:00:00Z",
+            "type": "RETURN_RECEIVED",
+            "actor_id": "SYSTEM",
+            "message": "RETURN_RECEIVED"
+          },
+          {
+            "schema_version": "1.0.0",
+            "event_id": "CASE-high-POLICY_DECIDED",
+            "case_id": "CASE-high",
+            "timestamp": "2026-09-01T12:00:00Z",
+            "type": "POLICY_DECIDED",
+            "actor_id": "SYSTEM",
+            "message": "POLICY_DECIDED"
+          },
+          {
+            "schema_version": "1.0.0",
+            "event_id": "CASE-high-REVIEW_REQUESTED",
+            "case_id": "CASE-high",
+            "timestamp": "2026-09-01T12:00:00Z",
+            "type": "REVIEW_REQUESTED",
+            "actor_id": "SYSTEM",
+            "message": "REVIEW_REQUESTED"
+          },
+          {
+            "schema_version": "1.0.0",
+            "event_id": "CASE-high-EXPLANATION_AVAILABLE",
+            "case_id": "CASE-high",
+            "timestamp": "2026-09-01T12:00:00Z",
+            "type": "EXPLANATION_AVAILABLE",
+            "actor_id": "SYSTEM",
+            "message": "EXPLANATION_AVAILABLE"
+          }
+        ],
+        "created_at": "2026-09-01T12:00:00Z",
+        "updated_at": "2026-09-01T12:00:00Z"
+      },
+      "expected_review_event": true
+    }
+  ]
+}

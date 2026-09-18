@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0.0",
+  "policy_version": "1.0.0",
+  "approval_status": "PENDING",
+  "signals": [
+    {
+      "signal": "seller",
+      "max": 30,
+      "predicate": "seller.return_rate >= 0.20 OR seller.dispute_count >= 3",
+      "source": "seller-history",
+      "required_fields": [
+        "seller.return_rate",
+        "seller.dispute_count"
+      ]
+    },
+    {
+      "signal": "listing",
+      "max": 25,
+      "predicate": "listing.status == CORRECTION_REQUIRED",
+      "source": "listing-analysis",
+      "required_fields": [
+        "listing.status"
+      ]
+    },
+    {
+      "signal": "customer",
+      "max": 20,
+      "predicate": "customer.recent_returns >= 3",
+      "source": "customer-history",
+      "required_fields": [
+        "customer.recent_returns"
+      ]
+    },
+    {
+      "signal": "return",
+      "max": 20,
+      "predicate": "request.reason == NOT_RECEIVED AND order.status == DELIVERED",
+      "source": "order-return",
+      "required_fields": [
+        "request.reason",
+        "order.status"
+      ]
+    },
+    {
+      "signal": "category",
+      "max": 15,
+      "predicate": "listing.category == ELECTRONICS",
+      "source": "category-policy",
+      "required_fields": [
+        "listing.category"
+      ]
+    }
+  ],
+  "aggregation": "sum contributions; clamp to [0,100]",
+  "thresholds": [
+    {
+      "min": 0,
+      "max": 29,
+      "decision": "AUTO_APPROVE",
+      "priority": "NONE"
+    },
+    {
+      "min": 30,
+      "max": 59,
+      "decision": "NEEDS_REVIEW",
+      "priority": "NORMAL"
+    },
+    {
+      "min": 60,
+      "max": 100,
+      "decision": "NEEDS_REVIEW",
+      "priority": "HIGH"
+    }
+  ],
+  "missing_context": "ERROR_MISSING_CONTEXT"
+}

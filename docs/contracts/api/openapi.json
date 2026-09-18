@@ -1,0 +1,1158 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ReturnShield Phase 00 API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "operationId": "HealthGet",
+        "responses": {
+          "200": {
+            "description": "Successful logical result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/HealthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/listings/analyze": {
+      "post": {
+        "operationId": "ListingPost",
+        "responses": {
+          "200": {
+            "description": "Successful logical result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/ListingResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Successful logical result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/ListingResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/ListingRequest"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/listings/{listing_id}": {
+      "get": {
+        "operationId": "ListingGet",
+        "responses": {
+          "200": {
+            "description": "Successful logical result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/ListingResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "listing_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/returns": {
+      "post": {
+        "operationId": "ReturnPost",
+        "responses": {
+          "200": {
+            "description": "Successful logical result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/ReturnResponse"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Successful logical result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/ReturnResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/ReturnRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases": {
+      "get": {
+        "operationId": "CasesGet",
+        "responses": {
+          "200": {
+            "description": "Successful logical result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/CasesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "enum": [
+                "PROCESSING",
+                "DECIDED",
+                "ERROR_MISSING_CONTEXT",
+                "FAILED"
+              ]
+            }
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "schema": {
+              "enum": [
+                "NONE",
+                "NORMAL",
+                "HIGH"
+              ]
+            }
+          },
+          {
+            "name": "decision",
+            "in": "query",
+            "schema": {
+              "enum": [
+                "AUTO_APPROVE",
+                "NEEDS_REVIEW"
+              ]
+            }
+          },
+          {
+            "name": "seller_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+            }
+          },
+          {
+            "name": "review_status",
+            "in": "query",
+            "schema": {
+              "enum": [
+                "OPEN",
+                "RESOLVED"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/v1/cases/{case_id}": {
+      "get": {
+        "operationId": "CaseGet",
+        "responses": {
+          "200": {
+            "description": "Successful logical result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/CaseResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/sellers/{seller_id}": {
+      "get": {
+        "operationId": "SellerGet",
+        "responses": {
+          "200": {
+            "description": "Successful logical result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/SellerResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "seller_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/dashboard/summary": {
+      "get": {
+        "operationId": "DashboardGet",
+        "responses": {
+          "200": {
+            "description": "Successful logical result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/DashboardResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cases/{case_id}/decision": {
+      "post": {
+        "operationId": "DecisionPost",
+        "responses": {
+          "200": {
+            "description": "Successful logical result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/DecisionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Structured error; see semantics.md",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "https://returnshield.example/contracts/api/http.schema.json#/$defs/DecisionRequest"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,387 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://returnshield.example/contracts/risk/evaluation.schema.json",
+  "$defs": {
+    "Contribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "signal": {
+          "enum": [
+            "seller",
+            "listing",
+            "customer",
+            "return",
+            "category"
+          ]
+        },
+        "points": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 30
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 30
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schema_version",
+        "signal",
+        "points",
+        "max",
+        "reason",
+        "evidence_refs"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "signal": {
+                "const": "seller"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "max": {
+                "const": 30
+              },
+              "points": {
+                "enum": [
+                  0,
+                  30
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "signal": {
+                "const": "listing"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "max": {
+                "const": 25
+              },
+              "points": {
+                "enum": [
+                  0,
+                  25
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "signal": {
+                "const": "customer"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "max": {
+                "const": 20
+              },
+              "points": {
+                "enum": [
+                  0,
+                  20
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "signal": {
+                "const": "return"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "max": {
+                "const": 20
+              },
+              "points": {
+                "enum": [
+                  0,
+                  20
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "signal": {
+                "const": "category"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "max": {
+                "const": 15
+              },
+              "points": {
+                "enum": [
+                  0,
+                  15
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Result": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "policy_version": {
+          "const": "1.0.0"
+        },
+        "raw_contribution_total": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 110
+        },
+        "score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "decision": {
+          "enum": [
+            "AUTO_APPROVE",
+            "NEEDS_REVIEW"
+          ]
+        },
+        "priority": {
+          "enum": [
+            "NONE",
+            "NORMAL",
+            "HIGH"
+          ]
+        },
+        "contributions": {
+          "type": "array",
+          "items": {
+            "$ref": "https://returnshield.example/contracts/risk/evaluation.schema.json#/$defs/Contribution"
+          },
+          "minItems": 5,
+          "maxItems": 5
+        }
+      },
+      "required": [
+        "schema_version",
+        "policy_version",
+        "raw_contribution_total",
+        "score",
+        "decision",
+        "priority",
+        "contributions"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "score": {
+                "minimum": 0,
+                "maximum": 29
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "decision": {
+                "const": "AUTO_APPROVE"
+              },
+              "priority": {
+                "const": "NONE"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "score": {
+                "minimum": 30,
+                "maximum": 59
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "decision": {
+                "const": "NEEDS_REVIEW"
+              },
+              "priority": {
+                "const": "NORMAL"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "score": {
+                "minimum": 60,
+                "maximum": 100
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "decision": {
+                "const": "NEEDS_REVIEW"
+              },
+              "priority": {
+                "const": "HIGH"
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "contributions": {
+              "contains": {
+                "properties": {
+                  "signal": {
+                    "const": "seller"
+                  }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          }
+        },
+        {
+          "properties": {
+            "contributions": {
+              "contains": {
+                "properties": {
+                  "signal": {
+                    "const": "listing"
+                  }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          }
+        },
+        {
+          "properties": {
+            "contributions": {
+              "contains": {
+                "properties": {
+                  "signal": {
+                    "const": "customer"
+                  }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          }
+        },
+        {
+          "properties": {
+            "contributions": {
+              "contains": {
+                "properties": {
+                  "signal": {
+                    "const": "return"
+                  }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          }
+        },
+        {
+          "properties": {
+            "contributions": {
+              "contains": {
+                "properties": {
+                  "signal": {
+                    "const": "category"
+                  }
+                }
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          }
+        }
+      ]
+    },
+    "MissingContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "policy_version": {
+          "const": "1.0.0"
+        },
+        "code": {
+          "const": "ERROR_MISSING_CONTEXT"
+        },
+        "missing_fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "policy_version",
+        "code",
+        "missing_fields"
+      ]
+    }
+  }
+}

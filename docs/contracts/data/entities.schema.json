@@ -1,0 +1,1258 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://returnshield.example/contracts/data/entities.schema.json",
+  "$defs": {
+    "Evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "evidence_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "kind": {
+          "enum": [
+            "SELLER_HISTORY",
+            "LISTING_CONTENT",
+            "CUSTOMER_HISTORY",
+            "ORDER_RECORD",
+            "RETURN_STATEMENT",
+            "CATEGORY_POLICY",
+            "CONTEXT_FAILURE"
+          ]
+        },
+        "source_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        }
+      },
+      "required": [
+        "schema_version",
+        "evidence_id",
+        "kind",
+        "source_id",
+        "text",
+        "observed_at"
+      ]
+    },
+    "Seller": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "seller_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "trust_score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "listing_flags": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "return_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "dispute_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cases": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "seller_id",
+        "trust_score",
+        "listing_flags",
+        "return_rate",
+        "dispute_count",
+        "cases"
+      ]
+    },
+    "Listing": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "listing_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "seller_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "category": {
+          "enum": [
+            "APPAREL",
+            "ELECTRONICS",
+            "HOME"
+          ]
+        },
+        "listing_risk": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "CORRECTION_REQUIRED"
+          ]
+        },
+        "analysis": {
+          "$ref": "https://returnshield.example/contracts/ai/models.schema.json#/$defs/ListingGuardOutput"
+        },
+        "analysis_metadata": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "model_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "prompt_version": {
+              "const": "1.0.0"
+            },
+            "schema_version": {
+              "const": "1.0.0"
+            },
+            "validation_result": {
+              "const": "VALID"
+            },
+            "correlation_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+            }
+          },
+          "required": [
+            "model_id",
+            "prompt_version",
+            "schema_version",
+            "validation_result",
+            "correlation_id"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        }
+      },
+      "required": [
+        "schema_version",
+        "listing_id",
+        "seller_id",
+        "title",
+        "description",
+        "category",
+        "listing_risk",
+        "status",
+        "analysis",
+        "analysis_metadata",
+        "created_at"
+      ]
+    },
+    "Customer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "customer_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "return_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "recent_returns": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "account_age_days": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "case_history": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "customer_id",
+        "return_count",
+        "recent_returns",
+        "account_age_days",
+        "case_history"
+      ]
+    },
+    "Order": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "order_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "seller_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "customer_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "listing_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        },
+        "status": {
+          "enum": [
+            "PLACED",
+            "SHIPPED",
+            "DELIVERED",
+            "CANCELLED"
+          ]
+        },
+        "delivered_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "order_id",
+        "seller_id",
+        "customer_id",
+        "listing_id",
+        "timestamp",
+        "status",
+        "delivered_at"
+      ]
+    },
+    "TimelineEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "case_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        },
+        "type": {
+          "enum": [
+            "RETURN_RECEIVED",
+            "POLICY_DECIDED",
+            "CONTEXT_FAILED",
+            "WORKFLOW_FAILED",
+            "REVIEW_REQUESTED",
+            "EXPLANATION_AVAILABLE",
+            "EXPLANATION_UNAVAILABLE",
+            "REVIEWER_DECISION"
+          ]
+        },
+        "actor_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "case_id",
+        "timestamp",
+        "type",
+        "actor_id",
+        "message"
+      ]
+    },
+    "ReviewerDisposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "action": {
+          "enum": [
+            "APPROVE_RETURN",
+            "DECLINE_RETURN"
+          ]
+        },
+        "actor_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "decided_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        }
+      },
+      "required": [
+        "schema_version",
+        "action",
+        "actor_id",
+        "note",
+        "decided_at"
+      ]
+    },
+    "RiskEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "risk_event_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "case_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "signal": {
+          "enum": [
+            "seller",
+            "listing",
+            "customer",
+            "return",
+            "category",
+            "context"
+          ]
+        },
+        "contribution": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 30
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 30
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "source": {
+          "enum": [
+            "seller-history",
+            "listing-analysis",
+            "customer-history",
+            "order-return",
+            "category-policy",
+            "incomplete-data"
+          ]
+        },
+        "policy_version": {
+          "const": "1.0.0"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        }
+      },
+      "required": [
+        "schema_version",
+        "risk_event_id",
+        "case_id",
+        "signal",
+        "contribution",
+        "max",
+        "reason",
+        "evidence_refs",
+        "source",
+        "policy_version",
+        "timestamp"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "incomplete-data"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "signal": {
+                "const": "context"
+              },
+              "contribution": {
+                "type": "null"
+              },
+              "max": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "signal": {
+                "enum": [
+                  "seller",
+                  "listing",
+                  "customer",
+                  "return",
+                  "category"
+                ]
+              },
+              "contribution": {
+                "type": "integer"
+              },
+              "max": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "signal": {
+                "const": "seller"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "max": {
+                "const": 30
+              },
+              "contribution": {
+                "enum": [
+                  0,
+                  30
+                ]
+              },
+              "source": {
+                "const": "seller-history"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "signal": {
+                "const": "listing"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "max": {
+                "const": 25
+              },
+              "contribution": {
+                "enum": [
+                  0,
+                  25
+                ]
+              },
+              "source": {
+                "const": "listing-analysis"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "signal": {
+                "const": "customer"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "max": {
+                "const": 20
+              },
+              "contribution": {
+                "enum": [
+                  0,
+                  20
+                ]
+              },
+              "source": {
+                "const": "customer-history"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "signal": {
+                "const": "return"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "max": {
+                "const": 20
+              },
+              "contribution": {
+                "enum": [
+                  0,
+                  20
+                ]
+              },
+              "source": {
+                "const": "order-return"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "signal": {
+                "const": "category"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "max": {
+                "const": 15
+              },
+              "contribution": {
+                "enum": [
+                  0,
+                  15
+                ]
+              },
+              "source": {
+                "const": "category-policy"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ReturnCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "case_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "order_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "seller_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "listing_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "customer_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "reason": {
+          "enum": [
+            "NOT_AS_DESCRIBED",
+            "DAMAGED",
+            "WRONG_ITEM",
+            "NOT_RECEIVED",
+            "CHANGED_MIND"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "https://returnshield.example/contracts/data/entities.schema.json#/$defs/Evidence"
+          }
+        },
+        "status": {
+          "enum": [
+            "PROCESSING",
+            "DECIDED",
+            "ERROR_MISSING_CONTEXT",
+            "FAILED"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "raw_contribution_total": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 110
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "risk_score": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "policy_version": {
+          "const": "1.0.0"
+        },
+        "decision": {
+          "anyOf": [
+            {
+              "enum": [
+                "AUTO_APPROVE",
+                "NEEDS_REVIEW"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "priority": {
+          "anyOf": [
+            {
+              "enum": [
+                "NONE",
+                "NORMAL",
+                "HIGH"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "contributions": {
+          "type": "array",
+          "items": {
+            "$ref": "https://returnshield.example/contracts/data/entities.schema.json#/$defs/RiskEvent"
+          }
+        },
+        "review_status": {
+          "enum": [
+            "NOT_APPLICABLE",
+            "OPEN",
+            "RESOLVED"
+          ]
+        },
+        "reviewer_disposition": {
+          "anyOf": [
+            {
+              "$ref": "https://returnshield.example/contracts/data/entities.schema.json#/$defs/ReviewerDisposition"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "explanation_status": {
+          "enum": [
+            "NOT_REQUESTED",
+            "PENDING",
+            "AVAILABLE",
+            "UNAVAILABLE",
+            "RETRY_PENDING"
+          ]
+        },
+        "explanation": {
+          "anyOf": [
+            {
+              "$ref": "https://returnshield.example/contracts/ai/models.schema.json#/$defs/InvestigatorOutput"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "enum": [
+                    "ERROR_MISSING_CONTEXT",
+                    "WORKFLOW_FAILED"
+                  ]
+                },
+                "missing_fields": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "message": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                }
+              },
+              "required": [
+                "code",
+                "missing_fields",
+                "message"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "timeline": {
+          "type": "array",
+          "items": {
+            "$ref": "https://returnshield.example/contracts/data/entities.schema.json#/$defs/TimelineEntry"
+          }
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        }
+      },
+      "required": [
+        "schema_version",
+        "case_id",
+        "order_id",
+        "seller_id",
+        "listing_id",
+        "customer_id",
+        "reason",
+        "evidence",
+        "status",
+        "revision",
+        "raw_contribution_total",
+        "risk_score",
+        "policy_version",
+        "decision",
+        "priority",
+        "contributions",
+        "review_status",
+        "reviewer_disposition",
+        "explanation_status",
+        "explanation",
+        "error",
+        "timeline",
+        "created_at",
+        "updated_at"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "DECIDED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "raw_contribution_total": {
+                "type": "integer"
+              },
+              "risk_score": {
+                "type": "integer"
+              },
+              "decision": {
+                "type": "string"
+              },
+              "priority": {
+                "type": "string"
+              },
+              "error": {
+                "type": "null"
+              },
+              "contributions": {
+                "minItems": 5,
+                "maxItems": 5
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "raw_contribution_total": {
+                "type": "null"
+              },
+              "risk_score": {
+                "type": "null"
+              },
+              "decision": {
+                "type": "null"
+              },
+              "priority": {
+                "type": "null"
+              },
+              "review_status": {
+                "const": "NOT_APPLICABLE"
+              },
+              "reviewer_disposition": {
+                "type": "null"
+              },
+              "explanation_status": {
+                "const": "NOT_REQUESTED"
+              },
+              "explanation": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "ERROR_MISSING_CONTEXT"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "ERROR_MISSING_CONTEXT"
+                  },
+                  "missing_fields": {
+                    "minItems": 1
+                  }
+                }
+              },
+              "contributions": {
+                "minItems": 1,
+                "items": {
+                  "properties": {
+                    "source": {
+                      "const": "incomplete-data"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "explanation_status": {
+                "const": "AVAILABLE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "explanation": {
+                "type": "object"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "explanation": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "review_status": {
+                "const": "RESOLVED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "reviewer_disposition": {
+                "type": "object"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "reviewer_disposition": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision": {
+                "const": "AUTO_APPROVE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "risk_score": {
+                "maximum": 29
+              },
+              "priority": {
+                "const": "NONE"
+              },
+              "review_status": {
+                "const": "NOT_APPLICABLE"
+              },
+              "explanation_status": {
+                "const": "NOT_REQUESTED"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision": {
+                "const": "NEEDS_REVIEW"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "risk_score": {
+                "minimum": 30
+              },
+              "review_status": {
+                "enum": [
+                  "OPEN",
+                  "RESOLVED"
+                ]
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "risk_score": {
+                      "maximum": 59
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "priority": {
+                      "const": "NORMAL"
+                    }
+                  }
+                },
+                "else": {
+                  "properties": {
+                    "priority": {
+                      "const": "HIGH"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "DECIDED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "contributions": {
+                "contains": {
+                  "properties": {
+                    "signal": {
+                      "const": "seller"
+                    }
+                  }
+                },
+                "minContains": 1,
+                "maxContains": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "DECIDED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "contributions": {
+                "contains": {
+                  "properties": {
+                    "signal": {
+                      "const": "listing"
+                    }
+                  }
+                },
+                "minContains": 1,
+                "maxContains": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "DECIDED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "contributions": {
+                "contains": {
+                  "properties": {
+                    "signal": {
+                      "const": "customer"
+                    }
+                  }
+                },
+                "minContains": 1,
+                "maxContains": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "DECIDED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "contributions": {
+                "contains": {
+                  "properties": {
+                    "signal": {
+                      "const": "return"
+                    }
+                  }
+                },
+                "minContains": 1,
+                "maxContains": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "DECIDED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "contributions": {
+                "contains": {
+                  "properties": {
+                    "signal": {
+                      "const": "category"
+                    }
+                  }
+                },
+                "minContains": 1,
+                "maxContains": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "PROCESSING"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "contributions": {
+                "maxItems": 0
+              },
+              "error": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "FAILED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "contributions": {
+                "maxItems": 0
+              },
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "const": "WORKFLOW_FAILED"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

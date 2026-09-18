@@ -1,0 +1,498 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://returnshield.example/contracts/api/http.schema.json",
+  "$defs": {
+    "Error": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "correlation_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "enum": [
+                "VALIDATION_ERROR",
+                "NOT_FOUND",
+                "IDEMPOTENCY_CONFLICT",
+                "REQUEST_IN_PROGRESS",
+                "REVISION_CONFLICT",
+                "INVALID_STATE",
+                "ERROR_MISSING_CONTEXT",
+                "AI_UNAVAILABLE",
+                "UNAUTHORIZED",
+                "FORBIDDEN",
+                "RATE_LIMITED",
+                "INTERNAL_ERROR"
+              ]
+            },
+            "message": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "field": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  },
+                  "message": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "field",
+                  "message"
+                ]
+              }
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "retryable",
+            "details"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "correlation_id",
+        "error"
+      ]
+    },
+    "HealthResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "correlation_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "service": {
+              "const": "returnshield"
+            },
+            "status": {
+              "const": "ok"
+            }
+          },
+          "required": [
+            "service",
+            "status"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "correlation_id",
+        "data"
+      ]
+    },
+    "ListingRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "listing_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "seller_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "category": {
+          "enum": [
+            "APPAREL",
+            "ELECTRONICS",
+            "HOME"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "listing_id",
+        "seller_id",
+        "title",
+        "description",
+        "category"
+      ]
+    },
+    "ListingResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "correlation_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "data": {
+          "$ref": "https://returnshield.example/contracts/data/entities.schema.json#/$defs/Listing"
+        }
+      },
+      "required": [
+        "schema_version",
+        "correlation_id",
+        "data"
+      ]
+    },
+    "ReturnRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "order_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "reason": {
+          "enum": [
+            "NOT_AS_DESCRIBED",
+            "DAMAGED",
+            "WRONG_ITEM",
+            "NOT_RECEIVED",
+            "CHANGED_MIND"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "https://returnshield.example/contracts/data/entities.schema.json#/$defs/Evidence"
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "order_id",
+        "reason",
+        "evidence"
+      ]
+    },
+    "ReturnResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "correlation_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "case": {
+              "$ref": "https://returnshield.example/contracts/data/entities.schema.json#/$defs/ReturnCase"
+            },
+            "replayed": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "case",
+            "replayed"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "correlation_id",
+        "data"
+      ]
+    },
+    "CaseResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "correlation_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "data": {
+          "$ref": "https://returnshield.example/contracts/data/entities.schema.json#/$defs/ReturnCase"
+        }
+      },
+      "required": [
+        "schema_version",
+        "correlation_id",
+        "data"
+      ]
+    },
+    "SellerResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "correlation_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "data": {
+          "$ref": "https://returnshield.example/contracts/data/entities.schema.json#/$defs/Seller"
+        }
+      },
+      "required": [
+        "schema_version",
+        "correlation_id",
+        "data"
+      ]
+    },
+    "CaseQuery": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 25
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "status": {
+          "enum": [
+            "PROCESSING",
+            "DECIDED",
+            "ERROR_MISSING_CONTEXT",
+            "FAILED"
+          ]
+        },
+        "priority": {
+          "enum": [
+            "NONE",
+            "NORMAL",
+            "HIGH"
+          ]
+        },
+        "decision": {
+          "enum": [
+            "AUTO_APPROVE",
+            "NEEDS_REVIEW"
+          ]
+        },
+        "seller_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "review_status": {
+          "enum": [
+            "OPEN",
+            "RESOLVED"
+          ]
+        }
+      },
+      "required": []
+    },
+    "CasesResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "correlation_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "https://returnshield.example/contracts/data/entities.schema.json#/$defs/ReturnCase"
+              }
+            },
+            "next_cursor": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "items",
+            "next_cursor"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "correlation_id",
+        "data"
+      ]
+    },
+    "DashboardResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "correlation_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "as_of": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+            },
+            "flagged_listings": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "auto_approved_returns": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "normal_review_cases": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "high_review_cases": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "open_review_cases": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "missing_context_cases": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "as_of",
+            "flagged_listings",
+            "auto_approved_returns",
+            "normal_review_cases",
+            "high_review_cases",
+            "open_review_cases",
+            "missing_context_cases"
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "correlation_id",
+        "data"
+      ]
+    },
+    "DecisionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "expected_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "action": {
+          "enum": [
+            "APPROVE_RETURN",
+            "DECLINE_RETURN"
+          ]
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        }
+      },
+      "required": [
+        "schema_version",
+        "expected_revision",
+        "action",
+        "note"
+      ]
+    },
+    "DecisionResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "correlation_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "data": {
+          "$ref": "https://returnshield.example/contracts/data/entities.schema.json#/$defs/ReturnCase"
+        }
+      },
+      "required": [
+        "schema_version",
+        "correlation_id",
+        "data"
+      ]
+    }
+  }
+}

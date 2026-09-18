@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0.0",
+  "vault": "D:\\PROJRCTS\\returensheild_vault",
+  "note": "Available planning Markdown; PDF/project report absent. Inventory includes later-phase context, not an assertion that every file was applied.",
+  "sha256": {
+    "CODING-RULES.md": "3ff8f5ecdf7be64402414e496f93b505c83c54fdc21bb4e78426b236ffa726da",
+    "Home.md": "3cfb1fbdf32fc6b872c1d8079d734a745eb5b740533698b0f5259e8807bb80c3",
+    "PHASE-00-scope-contract-lock.md": "cd637cf06942144c000f19f9045026d250fbb39cfa1672a029b5e5251c8a3759",
+    "PHASE-01-repository-foundation.md": "af2c385de9be4e1ea58c70d5c73c719e17ccfd98d2b6dffc27d04d098298312a",
+    "PHASE-02-data-and-seeds.md": "1286fcc3bce1ca25d204834e11d84cd6832afb3cce2bdea1fdbba93e59633d8f",
+    "PHASE-03-listingguard.md": "0d887bd95803e63f8c391b4134ca5037920f7ad5c92f9eea9011761cddda8b92",
+    "PHASE-04-trust-engine.md": "d677fc5524edb5c74bca6eee01b8b1972fa118aedd15aff8d90699d2aa0f0acc",
+    "PHASE-05-return-workflow.md": "6cd181ac951726295f00a8e8284f6e257b7e7dc2fd2e1e3f7ca76dc1bd748a05",
+    "PHASE-06-investigator-and-events.md": "2c09d6432a869c05ff27f4518892452c86a03a8ff8d14f66ada61075c946bbf5",
+    "PHASE-07-operations-center.md": "52bd66800a2099509297e69b31ceb7caf0e7f1e9ce6552083494e3e940e1cd1f",
+    "PHASE-08-end-to-end-integration.md": "5db092c0ae07c1d19c5c41aa73d832457b343c4dc6b5c311a8a7eb726ca12c61",
+    "PHASE-09-hardening.md": "e4d637938e4e433e99195bf6bab6c58b73a64cfa41df4f4458058bf4a21321b7",
+    "PHASE-10-demo-and-submission.md": "fb4d55f7686a8370ad8f1800d3a3e32902a8d9e80ca7947aa6552acd02b1d9e2",
+    "PHASE-INDEX.md": "d50d19fcb86d8eaca6bd75746c62244148dff2421c440b562fd945f3fa9cbf6b",
+    "Reference/Architecture-and-Service-Priorities.md": "c959803d33c946eae5a54b63238d3d4d74d07f1d5d9682aa5b07ce92149f811b",
+    "Reference/Data-Model-and-API-Contract.md": "c2a40adba898bc08cbd898ca2aa6af2e47f3799e81456e1d4dfc52d7e8e8db55",
+    "Reference/Demo-Script-and-Submission-Framing.md": "db270fa5431938c27aec2ccb6e4f84b6cf882bde4f56622f622f238a2e2ebb4a",
+    "Reference/Plan-Reconciliation-Record.md": "6e595f1336442d986fc059f9c6a13c1e4a81309541671e9c3a0ac7d056054384",
+    "Reference/Positioning-and-Scope.md": "2f23b33f206d0df9e43dd11814b25fb5fde5d6fb2d5ca53a29d26483a6b85ac1",
+    "Reference/Post-Hackathon-Roadmap.md": "96080bb0cfd385c7a8c6ab261a96930957a7bfa627a2210722b754e7aa6a0a60",
+    "Reference/Runtime-Paths-and-Workflow.md": "6526fd3e2d6db1347012fa46bd1ddc678a257d9fb2b946291578d715ce3f0b09",
+    "Reference/Security-and-Responsible-AI.md": "b09a8a7ea519ec053a0e4e5fbc5a72322db8dd1174f25834638f3b2bb1d67f79",
+    "Reference/Testing-and-Reliability.md": "a862ca1df254818b05ed8ffffca2a98238eb28f60f33369c16d2402668b25b8e",
+    "Reference/Trust-Engine-and-Decision-Thresholds.md": "dcd3d500a729962673cd70d84ba9a5ea0ea0e1bf229a1bc6ab812fefbe6863da",
+    "Reference/Trust-Operations-Center-UX.md": "db8926bb672d9c7e26d7400aff141016a95954b889aed670a4efc60014606b06"
+  }
+}
