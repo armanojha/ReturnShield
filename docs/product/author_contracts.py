@@ -10,7 +10,7 @@ URI = 'https://returnshield.example/contracts/'
 def write(path, value):
     target = BASE / path
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(json.dumps(value, indent=2) + '\n' if not isinstance(value, str) else value, encoding='utf-8')
+    target.write_text(json.dumps(value, indent=2) + '\n' if not isinstance(value, str) else value, encoding='utf-8', newline='\n')
 
 def obj(properties, optional=()):
     return {'type': 'object', 'additionalProperties': False, 'properties': properties,

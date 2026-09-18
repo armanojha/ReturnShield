@@ -34,7 +34,7 @@ Negative fixture testing found optional date-time validation was unavailable in 
 
 ## Baseline and handoff
 
-Candidate tag: `phase-00-contracts-v1.0.0-candidate`. Resolve its commit with `git rev-parse phase-00-contracts-v1.0.0-candidate^{commit}`. The commit containing this handoff is the baseline commit; the tag is a candidate marker, not human approval. baseline-manifest.json hashes every contract file. source-manifest.json records hashes of the available vault Markdown used as planning context. No source vault edits, application folders, dependencies, CI or AWS resources were created. No merge or push is performed.
+Candidate tag: `phase-00-contracts-v1.0.0-candidate`. Resolve its commit with `git rev-parse phase-00-contracts-v1.0.0-candidate^{commit}`. The tag points at the final baseline commit and is a candidate marker, not human approval. baseline-manifest.json hashes every contract file using UTF-8 with LF-normalized newlines, so Windows Git newline conversion does not invalidate a fresh checkout. Final verifier result: 449 checks passed. source-manifest.json records raw-byte hashes of the available vault Markdown used as planning context. No source vault edits, application folders, dependencies, CI or AWS resources were created. No merge or push is performed.
 
 Risks: the original PDF/report is unavailable; proposed triggers are synthetic demo policy, not empirically calibrated; source references contain conflicts explicitly reconciled in scope.md. JSON Schema cannot prove evidence semantics or arithmetic equality; the verifier covers the fixtures and the later production validator/evaluator must enforce the documented invariants for arbitrary inputs. Auth and deployment access controls require later runtime work.
 

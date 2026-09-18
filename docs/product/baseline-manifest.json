@@ -2,17 +2,18 @@
   "schema_version": "1.0.0",
   "candidate_tag": "phase-00-contracts-v1.0.0-candidate",
   "sha256": {
-    "docs/contracts/ai/models.schema.json": "6e5264d6274ddd81ecbee65b0941e573661f83fdeab6d6947fe77b313c356aad",
-    "docs/contracts/ai/validation-and-failure.md": "59032aae296e121c12d4dc2be732f0f0902d4ce51b18e427f425d9c7c304963e",
-    "docs/contracts/api/http.schema.json": "a83215c53fb4552ac8a5c43a36d5211a0b5e06a3172390e439deb5f46a3f1a91",
-    "docs/contracts/api/openapi.json": "a5fcd684c626d46bd45384583e7ebb9677b7e8051d771ec41dec9a39f3a89451",
-    "docs/contracts/api/semantics.md": "736983f57cfec6eba4e0ffe35426050e60eb0fe73acffa889ba783ea26db99a5",
-    "docs/contracts/data/entities.schema.json": "22a9a0c261464f8ae1843c8370888801089b347e0fe59a154333b735cb34eb1b",
-    "docs/contracts/data/relationships.md": "f1dff3de5b82902167957ae53c56a211f91b1cdee01d91181f174a00c47f7801",
-    "docs/contracts/risk/evaluation.schema.json": "d2d0100b75bf7f58c26f3e31ef9cca0d2d6368ab095c4bca33d819f9fe1c65d7",
-    "docs/contracts/risk/policy.json": "47b440a7cb1546c2b71988847412016cff555e0d8bcbd1157c8b41ce364f62cb",
-    "docs/contracts/risk/policy.md": "95be9eec2e5eee1b3473378dac6b48a99ae8a03268adefa616f28cdf7951cc46",
-    "docs/contracts/seeds/stories.json": "c51b900b473b47dacb912a4f32d8c611eb95cff07f2a6ae069ee79e216cf3806",
-    "docs/contracts/seeds/truth.md": "5547269e49c4c8d78f08931177b561936a361c0df047e5152e1f004ad86eefa4"
-  }
+    "docs/contracts/ai/models.schema.json": "90c4c2a3a238bc7e551eb2fadd5b4592b41b14ae0d56e1bb3d1c0c3011411795",
+    "docs/contracts/ai/validation-and-failure.md": "9d99bf9da3fcba91355a06cfae32e3bc424ff989cdbc146ed327748b5ee05c44",
+    "docs/contracts/api/http.schema.json": "64d7b82e3e2bd22b769029a29b11fe473e78f84cf367296c00fd91e66c6397f2",
+    "docs/contracts/api/openapi.json": "677c7d9c5bc2929de79ed090770795bdfa7259d5ae4907672c04279e9bb8420e",
+    "docs/contracts/api/semantics.md": "5f23285c0f99fb0b7a18a0f20e9498c5ac72968ecfef973bd8fe88020ba4616a",
+    "docs/contracts/data/entities.schema.json": "020acec938e1e508bc7619cd07e98a9418e07aa21218430647a4fec4293ed21b",
+    "docs/contracts/data/relationships.md": "a3d5459bf70c3f942bee2ae4e0a4403cf3f5adb0d802c898935576ac1dccd110",
+    "docs/contracts/risk/evaluation.schema.json": "ec733aee4128a614913904402110a68c796153e704fd04a9b916a035c92e3218",
+    "docs/contracts/risk/policy.json": "2fe8531e0a5840ad823bddf7da622405ec1eb05981e3760d7ca2eaae11c82240",
+    "docs/contracts/risk/policy.md": "d169885d435b062f9fcf439e46ec3d972bcd2fb41048b1c7500bde31c56f7a14",
+    "docs/contracts/seeds/stories.json": "86d723e95c3bc316bc885633422f8b4a1df43d0088c1b003635523f49d09329f",
+    "docs/contracts/seeds/truth.md": "7028200732775bd8c8db5a17a19d547f6869d51cdf43d4a5d6887e784ddc9225"
+  },
+  "hash_encoding": "UTF-8 with LF-normalized newlines"
 }

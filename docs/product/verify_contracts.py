@@ -174,7 +174,8 @@ manifest_path = ROOT / 'docs/product/baseline-manifest.json'
 if manifest_path.exists():
     manifest = json.loads(manifest_path.read_text())
     for name, digest in manifest['sha256'].items():
-        check(hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == digest, f'Baseline changed: {name}')
+        canonical = (ROOT / name).read_text(encoding='utf-8').replace('\r\n', '\n').encode('utf-8')
+        check(hashlib.sha256(canonical).hexdigest() == digest, f'Baseline changed: {name}')
     actual = {p.relative_to(ROOT).as_posix() for p in BASE.rglob('*') if p.is_file()}
     check(actual == set(manifest['sha256']), 'Manifest contract inventory')
 print(f'PASS: {checks} checks; {len(schemas)} schema bundles; 9 endpoints; 6 entities; 3 exact seed stories; routing boundaries and negative fixtures.')
