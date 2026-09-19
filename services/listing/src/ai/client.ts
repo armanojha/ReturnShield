@@ -40,7 +40,15 @@ export class BedrockListingGuardClient implements ListingGuardModelClient {
         .replace(/^```(?:json)?\s*/i, '')
         .replace(/\s*```$/, '')
         .trim();
-      return JSON.parse(cleaned);
+      try {
+        return JSON.parse(cleaned);
+      } catch {
+        const start = cleaned.indexOf('{');
+        const end = cleaned.lastIndexOf('}');
+        if (start < 0 || end <= start)
+          throw new SyntaxError('Bedrock response did not contain a JSON object');
+        return JSON.parse(cleaned.slice(start, end + 1));
+      }
     } finally {
       clearTimeout(timeout);
       signal?.removeEventListener('abort', abort);
