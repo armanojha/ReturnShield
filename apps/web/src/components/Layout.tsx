@@ -1,32 +1,64 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import {
+  NavLink,
+  Outlet,
+} from 'react-router-dom';
 
 import { HealthIndicator } from './HealthIndicator';
 
-const NAV = [
-  { to: '/marketplace', label: 'Marketplace' },
-  { to: '/ops', label: 'Operations' },
-] as const;
+const NAV_ITEMS = [
+  {
+    to: '/ops',
+    label: 'Operations',
+  },
+  {
+    to: '/marketplace',
+    label: 'Marketplace',
+  },
+];
 
-/** Shared chrome for every route: skip link, header, navigation and footer. */
 export function Layout(): JSX.Element {
   return (
     <div className="app">
-      <a className="skip-link" href="#main">
+      <a
+        href="#main"
+        className="skip-link"
+      >
         Skip to main content
       </a>
 
-      <header className="app__header">
-        <div className="app__brand">
-          <span className="app__mark" aria-hidden="true" />
-          <span className="app__name">ReturnShield</span>
+      <header className="topbar">
+        <div className="brand">
+          <div className="brand-mark">
+            RS
+          </div>
+
+          <div>
+            <div className="brand-name">
+              ReturnShield
+            </div>
+
+            <div className="brand-subtitle">
+              Trust Intelligence
+            </div>
+          </div>
         </div>
 
-        <nav className="app__nav" aria-label="Primary">
-          {NAV.map((item) => (
+        <nav
+          className="navigation"
+          aria-label="Primary navigation"
+        >
+          {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
-              className={({ isActive }) => (isActive ? 'app__link app__link--active' : 'app__link')}
+              end={item.to === '/ops'}
+              className={({
+                isActive,
+              }) =>
+                isActive
+                  ? 'navigation-link navigation-link--active'
+                  : 'navigation-link'
+              }
             >
               {item.label}
             </NavLink>
@@ -36,15 +68,21 @@ export function Layout(): JSX.Element {
         <HealthIndicator />
       </header>
 
-      <main id="main" className="app__main">
+      <main
+        id="main"
+        className="main-content"
+      >
         <Outlet />
       </main>
 
-      <footer className="app__footer">
-        <p>
-          Synthetic demonstration data only. Risk signals indicate that a case needs review; they
-          are not accusations of fraud.
-        </p>
+      <footer className="footer">
+        <span>
+          ReturnShield Trust Operations Center
+        </span>
+
+        <span>
+          Evidence-based risk intelligence
+        </span>
       </footer>
     </div>
   );

@@ -1,21 +1,29 @@
-import { Page } from '../components/Page';
-import { ListingGuardForm } from '../features/listing/ListingGuardForm';
+import {
+  Link,
+} from 'react-router-dom';
 
-/**
- * `/marketplace` — the mock seller-facing surface.
- *
- * Phase 01 delivers the shell and a live health check only. Listing submission
- * and ListingGuard results belong to Phase 03.
- */
+import { PageHeader } from '../components/PageHeader';
+import { ListingAnalyze } from '../features/listing/ListingAnalyze';
+
 export function MarketplaceRoute(): JSX.Element {
   return (
-    <Page
-      eyebrow="Marketplace"
-      title="Seller listing workspace"
-      lede="The demonstration storefront that submits listings to ListingGuard and raises returns against synthetic orders."
-    >
-      <ListingGuardForm />
-    </Page>
+    <>
+      <PageHeader
+        eyebrow="Marketplace"
+        title="Seller listing workspace"
+        description="Submit listing information to ReturnShield ListingGuard and inspect the returned analysis."
+        action={
+          <Link
+            to="/ops"
+            className="button button--secondary"
+          >
+            Open Operations
+          </Link>
+        }
+      />
+
+      <ListingAnalyze />
+    </>
   );
 }
 

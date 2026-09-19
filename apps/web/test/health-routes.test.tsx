@@ -2,9 +2,18 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { healthEnvelope, newCorrelationId } from '@returnshield/contracts';
-
 import { App } from '../src/App';
+
+const healthBody = {
+  schema_version: '1.0.0',
+  correlation_id: 'test-cid',
+  data: {
+    service: 'returnshield',
+    status: 'healthy',
+    version: '0.0.0',
+    uptime_seconds: 1,
+  },
+};
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -37,11 +46,11 @@ describe.each(ROUTES)('%s health indicator', (path) => {
     vi.mocked(fetch).mockReturnValue(new Promise(() => {}));
     renderAt(path);
 
-    expect(screen.getByText(/checking service health/i)).toBeInTheDocument();
+    expect(screen.getByText(/connecting/i)).toBeInTheDocument();
   });
 
   it('requests GET /v1/health through the shared client with a correlation id', async () => {
-    vi.mocked(fetch).mockResolvedValue(jsonResponse(healthEnvelope(newCorrelationId())));
+    vi.mocked(fetch).mockResolvedValue(jsonResponse(healthBody));
     renderAt(path);
 
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
@@ -53,7 +62,7 @@ describe.each(ROUTES)('%s health indicator', (path) => {
   });
 
   it('renders the success state when the service returns a valid envelope', async () => {
-    vi.mocked(fetch).mockResolvedValue(jsonResponse(healthEnvelope(newCorrelationId())));
+    vi.mocked(fetch).mockResolvedValue(jsonResponse(healthBody));
     renderAt(path);
 
     expect(await screen.findByText(/service healthy/i)).toBeInTheDocument();
@@ -64,7 +73,7 @@ describe.each(ROUTES)('%s health indicator', (path) => {
     renderAt(path);
 
     const alert = await screen.findByRole('alert');
-    expect(alert).toHaveTextContent(/service health unavailable/i);
+    expect(alert).toHaveTextContent(/API unavailable/i);
     expect(screen.queryByText(/service healthy/i)).not.toBeInTheDocument();
   });
 
@@ -82,7 +91,7 @@ describe.each(ROUTES)('%s health indicator', (path) => {
       jsonResponse(
         {
           schema_version: '1.0.0',
-          correlation_id: newCorrelationId(),
+          correlation_id: 'err-cid',
           error: {
             code: 'INTERNAL_ERROR',
             message: 'Health check could not be completed.',
@@ -103,7 +112,7 @@ describe('routing', () => {
   beforeEach(() => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue(jsonResponse(healthEnvelope(newCorrelationId()))),
+      vi.fn().mockResolvedValue(jsonResponse(healthBody)),
     );
   });
 
@@ -121,9 +130,9 @@ describe('routing', () => {
     expect(await screen.findByRole('heading', { name: /trust operations center/i })).toBeVisible();
   });
 
-  it('redirects the index route to the marketplace', async () => {
+  it('redirects the index route to the operations center', async () => {
     renderAt('/');
-    expect(await screen.findByRole('heading', { name: /seller listing workspace/i })).toBeVisible();
+    expect(await screen.findByRole('heading', { name: /trust operations center/i })).toBeVisible();
   });
 
   it('exposes primary navigation to both routes', () => {

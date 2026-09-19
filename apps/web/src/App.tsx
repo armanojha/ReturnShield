@@ -1,19 +1,38 @@
-import { Link, Navigate, Route, Routes } from 'react-router-dom';
+import {
+  Link,
+  Navigate,
+  Route,
+  Routes,
+} from 'react-router-dom';
 
 import { Layout } from './components/Layout';
+
 import { MarketplaceRoute } from './routes/MarketplaceRoute';
 import { OpsRoute } from './routes/OpsRoute';
+import { CaseRoute } from './routes/CaseRoute';
+import { ListingRoute } from './routes/ListingRoute';
+import { SellerRoute } from './routes/SellerRoute';
 
 function NotFoundRoute(): JSX.Element {
   return (
-    <article className="page">
-      <p className="page__eyebrow">404</p>
-      <h1 className="page__title">No such page</h1>
-      <p className="page__lede">
-        That route does not exist. Try the <Link to="/marketplace">marketplace</Link> or the{' '}
-        <Link to="/ops">operations center</Link>.
-      </p>
-    </article>
+    <section className="page-shell">
+      <div className="empty-card">
+        <div className="empty-icon">404</div>
+
+        <h1>Page not found</h1>
+
+        <p>
+          The requested ReturnShield page does not exist.
+        </p>
+
+        <Link
+          className="button button--primary"
+          to="/ops"
+        >
+          Open Operations Center
+        </Link>
+      </div>
+    </section>
   );
 }
 
@@ -21,10 +40,40 @@ export function App(): JSX.Element {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route index element={<Navigate to="/marketplace" replace />} />
-        <Route path="marketplace" element={<MarketplaceRoute />} />
-        <Route path="ops" element={<OpsRoute />} />
-        <Route path="*" element={<NotFoundRoute />} />
+        <Route
+          index
+          element={<Navigate to="/ops" replace />}
+        />
+
+        <Route
+          path="/marketplace"
+          element={<MarketplaceRoute />}
+        />
+
+        <Route
+          path="/ops"
+          element={<OpsRoute />}
+        />
+
+        <Route
+          path="/ops/cases/:caseId"
+          element={<CaseRoute />}
+        />
+
+        <Route
+          path="/ops/listings/:listingId"
+          element={<ListingRoute />}
+        />
+
+        <Route
+          path="/ops/sellers/:sellerId"
+          element={<SellerRoute />}
+        />
+
+        <Route
+          path="*"
+          element={<NotFoundRoute />}
+        />
       </Route>
     </Routes>
   );

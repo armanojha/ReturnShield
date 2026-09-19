@@ -26,7 +26,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "npm run sync:schemas && npm run typecheck --workspaces --if-present",
-    "test:unit": "npm run sync:schemas && npm run test:unit --workspaces --if-present",
+    "test:unit": "npm run sync:schemas && npm run build --workspace packages/contracts && npm run test:unit --workspaces --if-present",
     "test:contract": "npm run sync:schemas && npm run test:contract --workspace packages/contracts",
     "build": "npm run sync:schemas && npm run build --workspaces --if-present",
     "synth": "npm run synth --workspace infra",
