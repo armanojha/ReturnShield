@@ -91,3 +91,12 @@ export type EntityDefinitionName =
   | 'ReviewerDisposition'
   | 'RiskEvent'
   | 'ReturnCase';
+
+/**
+ * Named `$defs` in the frozen `contracts/ai/models.schema.json` contract.
+ * Phase 03 (task P3-AI-02) validates raw Bedrock output against
+ * `ListingGuardOutput` before it is trusted; `ListingGuardInput` is available
+ * for symmetry even though Phase 03 builds the prompt directly rather than
+ * validating its own input shape at runtime.
+ */
+export type AiDefinitionName = 'ListingGuardInput' | 'ListingGuardOutput';

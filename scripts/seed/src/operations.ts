@@ -85,7 +85,9 @@ function deepEqual(left: unknown, right: unknown): boolean {
   const rightKeys = Object.keys(rightRecord).sort();
   return (
     leftKeys.length === rightKeys.length &&
-    leftKeys.every((key, index) => key === rightKeys[index] && deepEqual(leftRecord[key], rightRecord[key]))
+    leftKeys.every(
+      (key, index) => key === rightKeys[index] && deepEqual(leftRecord[key], rightRecord[key]),
+    )
   );
 }
 
@@ -138,8 +140,7 @@ export async function verifySeeds(target: SeedTarget): Promise<{ ok: boolean; er
     if (!actual) errors.push(`Missing ${keys.pk}`);
     else
       for (const [field, value] of Object.entries(expected))
-        if (!deepEqual(actual[field], value))
-          errors.push(`${keys.pk} field ${field} differs`);
+        if (!deepEqual(actual[field], value)) errors.push(`${keys.pk} field ${field} differs`);
   }
   for (const expected of SEED_DATASET.expected_results) {
     const items = await target.query(`CASE#${expected.case_id}`);

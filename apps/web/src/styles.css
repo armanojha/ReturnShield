@@ -253,6 +253,55 @@ a {
   font-size: 0.875rem;
 }
 
+.listing-form {
+  display: grid;
+  gap: var(--space-3);
+}
+.listing-form label {
+  display: grid;
+  gap: var(--space-1);
+  font-weight: 600;
+}
+.listing-form input,
+.listing-form textarea,
+.listing-form select {
+  width: 100%;
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+.listing-form button {
+  width: fit-content;
+  padding: var(--space-2) var(--space-4);
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: white;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.listing-form button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.listing-result {
+  margin-top: var(--space-4);
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.listing-result--pass {
+  background: var(--ok-surface);
+}
+.listing-result--review,
+.listing-result--error {
+  background: var(--warn-surface);
+}
+
 .app__footer {
   padding: var(--space-4);
   border-top: 1px solid var(--border);

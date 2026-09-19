@@ -1,4 +1,5 @@
-import { ComingInPhase, Page } from '../components/Page';
+import { Page } from '../components/Page';
+import { ListingGuardForm } from '../features/listing/ListingGuardForm';
 
 /**
  * `/marketplace` — the mock seller-facing surface.
@@ -13,14 +14,7 @@ export function MarketplaceRoute(): JSX.Element {
       title="Seller listing workspace"
       lede="The demonstration storefront that submits listings to ListingGuard and raises returns against synthetic orders."
     >
-      <ComingInPhase
-        phase="Phase 03"
-        summary="Listing submission, validated ListingGuard results and correction guidance."
-      />
-      <ComingInPhase
-        phase="Phase 05"
-        summary="Return intake against an existing synthetic order, with the case status it produces."
-      />
+      <ListingGuardForm />
     </Page>
   );
 }

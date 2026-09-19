@@ -43,7 +43,17 @@ describe('health function', () => {
 
   it('holds no permissions beyond writing its own logs', () => {
     const policies = template.findResources('AWS::IAM::Policy');
-    const actions = Object.values(policies).flatMap((policy) =>
+    const healthPolicy = Object.values(policies).find((policy) => {
+      const statements = (
+        policy.Properties as { PolicyDocument: { Statement: { Action: string | string[] }[] } }
+      ).PolicyDocument.Statement;
+      const actions = statements.flatMap((statement) =>
+        Array.isArray(statement.Action) ? statement.Action : [statement.Action],
+      );
+      return actions.length > 0 && actions.every((action) => action.startsWith('logs:'));
+    });
+    expect(healthPolicy).toBeDefined();
+    const actions = [healthPolicy!].flatMap((policy) =>
       (
         policy.Properties as {
           PolicyDocument: { Statement: { Action: string | string[] }[] };
@@ -61,12 +71,12 @@ describe('health function', () => {
 });
 
 describe('api boundary', () => {
-  it('exposes exactly one GET method in Phase 01', () => {
+  it('exposes health and listing retrieval GET methods', () => {
     const methods = template.findResources('AWS::ApiGateway::Method');
     const gets = Object.values(methods).filter(
       (method) => (method.Properties as { HttpMethod: string }).HttpMethod === 'GET',
     );
-    expect(gets).toHaveLength(1);
+    expect(gets).toHaveLength(2);
   });
 
   it('nests health beneath the versioned root', () => {

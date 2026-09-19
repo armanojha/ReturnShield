@@ -13,6 +13,32 @@ import {
 } from '@returnshield/contracts';
 import type { ErrorCode, HealthResponse, HttpDefinitionName } from '@returnshield/contracts';
 
+export interface ListingRequest {
+  schema_version: '1.0.0';
+  listing_id: string;
+  seller_id: string;
+  title: string;
+  description: string;
+  category: 'APPAREL' | 'ELECTRONICS' | 'HOME';
+}
+
+export interface ListingResponse {
+  schema_version: '1.0.0';
+  correlation_id: string;
+  data: {
+    listing_id: string;
+    seller_id: string;
+    title: string;
+    description: string;
+    category: ListingRequest['category'];
+    listing_risk: 'low' | 'medium' | 'high';
+    status: 'PASS' | 'CORRECTION_REQUIRED';
+    analysis: Record<string, unknown>;
+    analysis_metadata: Record<string, unknown>;
+    created_at: string;
+  };
+}
+
 const DEFAULT_TIMEOUT_MS = 8000;
 
 function baseUrl(): string {
@@ -62,6 +88,9 @@ export class ApiError extends Error {
 interface RequestOptions {
   /** Allows a caller (or a test) to cancel an in-flight request. */
   signal?: AbortSignal;
+  method?: 'GET' | 'POST';
+  body?: unknown;
+  headers?: Record<string, string>;
 }
 
 async function request<T>(
@@ -79,8 +108,13 @@ async function request<T>(
   let response: Response;
   try {
     response = await fetch(`${baseUrl()}${path}`, {
-      method: 'GET',
-      headers: { accept: 'application/json', 'x-correlation-id': correlationId },
+      method: options.method ?? 'GET',
+      headers: {
+        accept: 'application/json',
+        'x-correlation-id': correlationId,
+        ...(options.headers ?? {}),
+      },
+      ...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
       signal: controller.signal,
     });
   } catch (error) {
@@ -138,4 +172,22 @@ export function getHealth(options: RequestOptions = {}): Promise<HealthResponse>
   return request<HealthResponse>('/v1/health', 'HealthResponse', options);
 }
 
-export const apiClient = { getHealth, baseUrl };
+export function analyzeListing(
+  input: ListingRequest,
+  idempotencyKey = newCorrelationId(),
+): Promise<ListingResponse> {
+  return request<ListingResponse>('/v1/listings/analyze', 'ListingResponse', {
+    method: 'POST',
+    body: input,
+    headers: { 'content-type': 'application/json', 'idempotency-key': idempotencyKey },
+  });
+}
+
+export function getListing(listingId: string): Promise<ListingResponse> {
+  return request<ListingResponse>(
+    `/v1/listings/${encodeURIComponent(listingId)}`,
+    'ListingResponse',
+  );
+}
+
+export const apiClient = { getHealth, analyzeListing, getListing, baseUrl };

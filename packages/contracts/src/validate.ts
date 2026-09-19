@@ -9,6 +9,7 @@ import {
   riskEvaluationSchema,
 } from './generated/schemas.js';
 import type {
+  AiDefinitionName,
   ApiErrorEnvelope,
   EntityDefinitionName,
   HealthResponse,
@@ -17,6 +18,7 @@ import type {
 
 const HTTP_SCHEMA_ID = 'https://returnshield.example/contracts/api/http.schema.json';
 const ENTITY_SCHEMA_ID = 'https://returnshield.example/contracts/data/entities.schema.json';
+const AI_SCHEMA_ID = 'https://returnshield.example/contracts/ai/models.schema.json';
 
 /**
  * One Ajv instance holding every frozen bundle, so cross-bundle `$ref`s
@@ -36,6 +38,7 @@ function createAjv(): Ajv2020 {
 const ajv = createAjv();
 const cache = new Map<HttpDefinitionName, ValidateFunction>();
 const entityCache = new Map<EntityDefinitionName, ValidateFunction>();
+const aiCache = new Map<AiDefinitionName, ValidateFunction>();
 
 /** Compiled validator for a named `$def` of the frozen HTTP contract. */
 export function getHttpValidator(name: HttpDefinitionName): ValidateFunction {
@@ -79,6 +82,38 @@ export function assertValidEntity<T>(name: EntityDefinitionName, payload: unknow
   return result.value;
 }
 
+/**
+ * Compiled validator for a named `$def` of the frozen AI contract
+ * (`contracts/ai/models.schema.json`). Added for Phase 03 (task P3-AI-02):
+ * raw Bedrock output must be validated against `ListingGuardOutput` before
+ * it is trusted — never persisted, and never silently accepted, on failure.
+ */
+export function getAiValidator(name: AiDefinitionName): ValidateFunction {
+  const cached = aiCache.get(name);
+  if (cached) return cached;
+  const validator = ajv.getSchema(`${AI_SCHEMA_ID}#/$defs/${name}`);
+  if (!validator) throw new Error(`Frozen contract has no AI definition named "${name}"`);
+  aiCache.set(name, validator);
+  return validator;
+}
+
+export function validateAiOutput<T>(name: AiDefinitionName, payload: unknown): ValidationResult<T> {
+  const validator = getAiValidator(name);
+  const valid = validator(payload);
+  return valid
+    ? { valid: true, value: payload as T, errors: [] }
+    : { valid: false, errors: formatValidationErrors(validator.errors) };
+}
+
+/** Validates and narrows, or throws `ContractViolationError`, against the frozen AI contract. */
+export function assertValidAiOutput<T>(name: AiDefinitionName, payload: unknown): T {
+  const result = validateAiOutput<T>(name, payload);
+  if (!result.valid || result.value === undefined) {
+    throw new ContractViolationError(name, result.errors);
+  }
+  return result.value;
+}
+
 /** Human-readable, log-safe rendering of Ajv errors. Never includes payload values. */
 export function formatValidationErrors(errors: ErrorObject[] | null | undefined): string[] {
   if (!errors || errors.length === 0) return [];
@@ -102,10 +137,13 @@ export function validateAgainst<T>(name: HttpDefinitionName, payload: unknown): 
 }
 
 export class ContractViolationError extends Error {
-  public readonly definition: HttpDefinitionName | EntityDefinitionName;
+  public readonly definition: HttpDefinitionName | EntityDefinitionName | AiDefinitionName;
   public readonly violations: string[];
 
-  constructor(definition: HttpDefinitionName | EntityDefinitionName, violations: string[]) {
+  constructor(
+    definition: HttpDefinitionName | EntityDefinitionName | AiDefinitionName,
+    violations: string[],
+  ) {
     super(`Payload does not satisfy frozen contract "${definition}": ${violations.join('; ')}`);
     this.name = 'ContractViolationError';
     this.definition = definition;
