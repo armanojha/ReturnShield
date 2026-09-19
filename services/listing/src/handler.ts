@@ -20,6 +20,7 @@ import type { APIGatewayProxyResult, APIGatewayProxyEvent } from 'aws-lambda';
 import { BedrockListingGuardClient, modelId } from './ai/client.js';
 import { mapListingAnalysis } from './ai/mapper.js';
 import { validateListingGuardOutput } from './ai/validator.js';
+import { logListingFailure } from './logger.js';
 import type { ListingInput, ListingAnalysisResult } from './types.js';
 
 const tableName = process.env.RETURNSHIELD_TABLE_NAME ?? '';
@@ -117,14 +118,18 @@ export async function postAnalyze(event: APIGatewayProxyEvent): Promise<APIGatew
   if (reservation.kind === 'COMPLETED')
     return response(200, reservation.record.result, correlationId);
 
+  let stage = 'bedrock';
   try {
     const raw = await model.analyze(input);
+    stage = 'validation';
     const analysis = validateListingGuardOutput(raw, input);
     const listing = mapListingAnalysis(input, analysis, {
       model_id: modelId(model),
       correlation_id: correlationId,
     });
+    stage = 'persistence';
     await repositories.listings.create(listing);
+    stage = 'response';
     const result = assertValid<ListingAnalysisResult>('ListingResponse', {
       schema_version: '1.0.0',
       correlation_id: correlationId,
@@ -133,6 +138,12 @@ export async function postAnalyze(event: APIGatewayProxyEvent): Promise<APIGatew
     await completeReservation(idempotency, reservationInput, result, input.listing_id);
     return response(201, result, correlationId);
   } catch (error) {
+    logListingFailure({
+      event: 'listing.analyze',
+      correlation_id: correlationId,
+      stage,
+      error_kind: error instanceof Error ? error.name : 'UnknownError',
+    });
     await failReservation(idempotency, reservationInput);
     if (error instanceof Error && error.name === 'RepositoryConflictError')
       return errorResponse(
