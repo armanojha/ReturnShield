@@ -71,6 +71,24 @@ function record(entity: Entity): Record<string, unknown> {
   return toStoredItem(name, entity);
 }
 
+function deepEqual(left: unknown, right: unknown): boolean {
+  if (Object.is(left, right)) return true;
+  if (typeof left !== 'object' || left === null || typeof right !== 'object' || right === null)
+    return false;
+  if (Array.isArray(left) || Array.isArray(right)) {
+    if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) return false;
+    return left.every((value, index) => deepEqual(value, right[index]));
+  }
+  const leftRecord = left as Record<string, unknown>;
+  const rightRecord = right as Record<string, unknown>;
+  const leftKeys = Object.keys(leftRecord).sort();
+  const rightKeys = Object.keys(rightRecord).sort();
+  return (
+    leftKeys.length === rightKeys.length &&
+    leftKeys.every((key, index) => key === rightKeys[index] && deepEqual(leftRecord[key], rightRecord[key]))
+  );
+}
+
 export function initialEntities(): Entity[] {
   return [
     ...SEED_DATASET.sellers,
@@ -120,7 +138,7 @@ export async function verifySeeds(target: SeedTarget): Promise<{ ok: boolean; er
     if (!actual) errors.push(`Missing ${keys.pk}`);
     else
       for (const [field, value] of Object.entries(expected))
-        if (JSON.stringify(actual[field]) !== JSON.stringify(value))
+        if (!deepEqual(actual[field], value))
           errors.push(`${keys.pk} field ${field} differs`);
   }
   for (const expected of SEED_DATASET.expected_results) {
