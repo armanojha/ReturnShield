@@ -110,8 +110,8 @@ describe('observability and data placeholder', () => {
     });
   });
 
-  it('does not create later-phase services', () => {
-    template.resourceCountIs('AWS::StepFunctions::StateMachine', 0);
+  it('creates the return workflow without later event routing', () => {
+    template.resourceCountIs('AWS::StepFunctions::StateMachine', 1);
     template.resourceCountIs('AWS::Events::Rule', 0);
   });
 });
@@ -125,6 +125,8 @@ describe('outputs', () => {
         'CoreTableName',
         'HealthEndpoint',
         'HealthFunctionName',
+        'ReturnFunctionName',
+        'ReturnWorkflowArn',
       ]),
     );
   });

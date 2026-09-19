@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"],
+    "paths": {
+      "@returnshield/context": ["../context/src/index.ts"],
+      "@returnshield/contracts": ["../../packages/contracts/src/index.ts"],
+      "@returnshield/data": ["../data/src/index.ts"],
+      "@returnshield/risk-policy": ["../../packages/risk-policy/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts"]
+}

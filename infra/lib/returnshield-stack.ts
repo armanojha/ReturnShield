@@ -17,6 +17,7 @@ import type { StackProps } from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 
 import { grantReturnShieldDataAccess, ReturnShieldDataIndexes } from '../data/data-indexes';
+import { ReturnWorkflow } from '../workflow/return-workflow';
 
 /** Environments this stack may be deployed into. */
 export const ENVIRONMENTS = ['dev', 'staging', 'prod'] as const;
@@ -35,22 +36,13 @@ export interface ReturnShieldStackProps extends StackProps {
   envName: EnvironmentName;
 }
 
-/**
- * Base stack for Phase 01 (task P1-INF-01).
- *
- * Scope is deliberately limited to the Tier 0 services the health path needs,
- * plus the DynamoDB table Phase 02 will populate. Step Functions, EventBridge,
- * Bedrock and the feature Lambdas belong to later phases and are intentionally
- * absent rather than stubbed.
- *
- * No account ID, deployed identifier or secret appears in this file: the
- * account and region come from the deploying CLI session.
- */
+/** ReturnShield application stack. Account and region come from the deploying CLI session. */
 export class ReturnShieldStack extends Stack {
   public readonly api: apigateway.RestApi;
   public readonly table: dynamodb.Table;
   public readonly healthFunction: nodejs.NodejsFunction;
   public readonly listingFunction: nodejs.NodejsFunction;
+  public readonly returnFunction: nodejs.NodejsFunction;
 
   constructor(scope: Construct, id: string, props: ReturnShieldStackProps) {
     super(scope, id, props);
@@ -63,9 +55,7 @@ export class ReturnShieldStack extends Stack {
     Tags.of(this).add('environment', envName);
     Tags.of(this).add('data-classification', 'synthetic');
 
-    // --- Data placeholder -------------------------------------------------
-    // Single-table design, created here so later phases have a stable target.
-    // Phase 01 writes nothing to it and grants no access to it.
+    // --- Data -------------------------------------------------------------
     this.table = new dynamodb.Table(this, 'CoreTable', {
       tableName: resourceName(envName, 'core'),
       partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
@@ -181,6 +171,52 @@ export class ReturnShieldStack extends Stack {
       },
     });
 
+    const returnWorkflow = new ReturnWorkflow(this, 'ReturnWorkflow', {
+      envName,
+      table: this.table,
+      retention,
+      isProduction,
+    });
+    const returnLogGroup = new logs.LogGroup(this, 'ReturnFunctionLogs', {
+      logGroupName: `/aws/lambda/${resourceName(envName, 'returns')}`,
+      retention,
+      removalPolicy: isProduction ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
+    });
+    const returnRole = new iam.Role(this, 'ReturnFunctionRole', {
+      roleName: resourceName(envName, 'returns-role'),
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    returnRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+        resources: [returnLogGroup.logGroupArn, `${returnLogGroup.logGroupArn}:*`],
+      }),
+    );
+    grantReturnShieldDataAccess(this.table, returnRole);
+    returnWorkflow.stateMachine.grantStartExecution(returnRole);
+    this.returnFunction = new nodejs.NodejsFunction(this, 'ReturnFunction', {
+      functionName: resourceName(envName, 'returns'),
+      entry: path.join(__dirname, '..', '..', 'services', 'returns', 'src', 'handler.ts'),
+      handler: 'handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+      architecture: lambda.Architecture.ARM_64,
+      memorySize: 512,
+      timeout: Duration.seconds(15),
+      role: returnRole,
+      logGroup: returnLogGroup,
+      environment: {
+        RETURNSHIELD_TABLE_NAME: this.table.tableName,
+        RETURNSHIELD_RETURN_WORKFLOW_ARN: returnWorkflow.stateMachine.stateMachineArn,
+      },
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        target: 'node20',
+        format: nodejs.OutputFormat.ESM,
+        externalModules: ['@aws-sdk/*'],
+      },
+    });
+
     // --- HTTP boundary ----------------------------------------------------
     const accessLogGroup = new logs.LogGroup(this, 'ApiAccessLogs', {
       logGroupName: `/aws/apigateway/${resourceName(envName, 'api')}`,
@@ -218,8 +254,7 @@ export class ReturnShieldStack extends Stack {
       },
     });
 
-    // Later phases add /listings, /returns, /cases, /sellers and /dashboard
-    // beneath this same versioned root.
+    // All application routes live beneath this versioned root.
     const v1 = this.api.root.addResource('v1');
     v1.addResource('health').addMethod(
       'GET',
@@ -232,6 +267,10 @@ export class ReturnShieldStack extends Stack {
     listings
       .addResource('{listing_id}')
       .addMethod('GET', new apigateway.LambdaIntegration(this.listingFunction, { proxy: true }));
+    v1.addResource('returns').addMethod(
+      'POST',
+      new apigateway.LambdaIntegration(this.returnFunction, { proxy: true }),
+    );
 
     // --- Outputs ----------------------------------------------------------
     new CfnOutput(this, 'ApiBaseUrl', {
@@ -246,7 +285,7 @@ export class ReturnShieldStack extends Stack {
 
     new CfnOutput(this, 'CoreTableName', {
       value: this.table.tableName,
-      description: 'DynamoDB table reserved for Phase 02 data access.',
+      description: 'ReturnShield single-table data store.',
     });
 
     new CfnOutput(this, 'HealthFunctionName', {
@@ -257,6 +296,10 @@ export class ReturnShieldStack extends Stack {
     new CfnOutput(this, 'ListingFunctionName', {
       value: this.listingFunction.functionName,
       description: 'ListingGuard Lambda function name, for log lookup.',
+    });
+    new CfnOutput(this, 'ReturnFunctionName', { value: this.returnFunction.functionName });
+    new CfnOutput(this, 'ReturnWorkflowArn', {
+      value: returnWorkflow.stateMachine.stateMachineArn,
     });
   }
 }
