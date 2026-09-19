@@ -99,4 +99,9 @@ export type EntityDefinitionName =
  * for symmetry even though Phase 03 builds the prompt directly rather than
  * validating its own input shape at runtime.
  */
-export type AiDefinitionName = 'ListingGuardInput' | 'ListingGuardOutput';
+export type AiDefinitionName =
+  | 'ListingGuardInput'
+  | 'ListingGuardOutput'
+  | 'InvestigatorInput'
+  | 'InvestigatorOutput'
+  | 'ReviewEvent';

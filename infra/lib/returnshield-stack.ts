@@ -17,6 +17,7 @@ import type { StackProps } from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 
 import { grantReturnShieldDataAccess, ReturnShieldDataIndexes } from '../data/data-indexes';
+import { ReviewEvents } from '../events/review-events';
 import { ReturnWorkflow } from '../workflow/return-workflow';
 
 /** Environments this stack may be deployed into. */
@@ -50,6 +51,7 @@ export class ReturnShieldStack extends Stack {
     const { envName } = props;
     const isProduction = envName === 'prod';
     const retention = isProduction ? logs.RetentionDays.ONE_MONTH : logs.RetentionDays.ONE_WEEK;
+    const bedrockModelId = process.env.BEDROCK_MODEL_ID ?? 'amazon.nova-lite-v1:0';
 
     Tags.of(this).add('project', 'returnshield');
     Tags.of(this).add('environment', envName);
@@ -159,7 +161,7 @@ export class ReturnShieldStack extends Stack {
         LOG_LEVEL: isProduction ? 'info' : 'debug',
         RETURNSHIELD_ENV: envName,
         RETURNSHIELD_TABLE_NAME: this.table.tableName,
-        BEDROCK_MODEL_ID: process.env.BEDROCK_MODEL_ID ?? 'amazon.nova-lite-v1:0',
+        BEDROCK_MODEL_ID: bedrockModelId,
         BEDROCK_TIMEOUT_MS: '8000',
       },
       bundling: {
@@ -171,11 +173,19 @@ export class ReturnShieldStack extends Stack {
       },
     });
 
+    const reviewEvents = new ReviewEvents(this, 'ReviewEvents', {
+      envName,
+      table: this.table,
+      retention,
+      isProduction,
+      bedrockModelId,
+    });
     const returnWorkflow = new ReturnWorkflow(this, 'ReturnWorkflow', {
       envName,
       table: this.table,
       retention,
       isProduction,
+      eventBus: reviewEvents.eventBus,
     });
     const returnLogGroup = new logs.LogGroup(this, 'ReturnFunctionLogs', {
       logGroupName: `/aws/lambda/${resourceName(envName, 'returns')}`,
@@ -300,6 +310,15 @@ export class ReturnShieldStack extends Stack {
     new CfnOutput(this, 'ReturnFunctionName', { value: this.returnFunction.functionName });
     new CfnOutput(this, 'ReturnWorkflowArn', {
       value: returnWorkflow.stateMachine.stateMachineArn,
+    });
+    new CfnOutput(this, 'ReviewEventBusName', {
+      value: reviewEvents.eventBus.eventBusName,
+    });
+    new CfnOutput(this, 'InvestigatorFunctionName', {
+      value: reviewEvents.investigator.functionName,
+    });
+    new CfnOutput(this, 'InvestigationDeadLetterQueueUrl', {
+      value: reviewEvents.deadLetterQueue.queueUrl,
     });
   }
 }

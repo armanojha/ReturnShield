@@ -110,9 +110,55 @@ describe('observability and data placeholder', () => {
     });
   });
 
-  it('creates the return workflow without later event routing', () => {
+  it('creates the return workflow and review-event routing', () => {
     template.resourceCountIs('AWS::StepFunctions::StateMachine', 1);
-    template.resourceCountIs('AWS::Events::Rule', 0);
+    template.resourceCountIs('AWS::Events::EventBus', 1);
+    template.resourceCountIs('AWS::Events::Rule', 1);
+    template.resourceCountIs('AWS::SQS::Queue', 1);
+    template.hasResourceProperties('AWS::SQS::Queue', {
+      QueueName: 'returnshield-dev-investigation-dlq',
+      MessageRetentionPeriod: 1209600,
+    });
+  });
+
+  it('routes review events with bounded retries and a dead-letter queue', () => {
+    template.hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: {
+        source: ['returnshield.returns'],
+        'detail-type': ['RETURN_NEEDS_REVIEW'],
+      },
+      Targets: Match.arrayWith([
+        Match.objectLike({
+          RetryPolicy: { MaximumEventAgeInSeconds: 3600, MaximumRetryAttempts: 2 },
+          DeadLetterConfig: { Arn: Match.anyValue() },
+        }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
+      MaximumRetryAttempts: 1,
+      DestinationConfig: { OnFailure: { Destination: Match.anyValue() } },
+    });
+  });
+
+  it('gives the Investigator model-scoped invoke permission', () => {
+    const policies = template.findResources('AWS::IAM::Policy');
+    const bedrockStatements = Object.values(policies).flatMap((policy) =>
+      (
+        policy.Properties as {
+          PolicyDocument: { Statement: { Action: string | string[]; Resource: unknown }[] };
+        }
+      ).PolicyDocument.Statement.filter(
+        (statement) =>
+          (Array.isArray(statement.Action) ? statement.Action : [statement.Action]).includes(
+            'bedrock:InvokeModel',
+          ) && statement.Resource !== '*',
+      ),
+    );
+    expect(bedrockStatements).toHaveLength(1);
+    const serialized = JSON.stringify(bedrockStatements[0]!.Resource);
+    expect(serialized).toContain('foundation-model');
+    expect(serialized).toContain('inference-profile');
+    expect(bedrockStatements[0]!.Resource).not.toBe('*');
   });
 });
 
@@ -127,6 +173,9 @@ describe('outputs', () => {
         'HealthFunctionName',
         'ReturnFunctionName',
         'ReturnWorkflowArn',
+        'ReviewEventBusName',
+        'InvestigatorFunctionName',
+        'InvestigationDeadLetterQueueUrl',
       ]),
     );
   });

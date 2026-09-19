@@ -10,7 +10,7 @@ import {
   aws_stepfunctions as sfn,
   aws_stepfunctions_tasks as tasks,
 } from 'aws-cdk-lib';
-import type { aws_dynamodb as dynamodb } from 'aws-cdk-lib';
+import type { aws_dynamodb as dynamodb, aws_events as events } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 import { grantReturnShieldDataAccess } from '../data/data-indexes';
@@ -20,6 +20,7 @@ export interface ReturnWorkflowProps {
   table: dynamodb.Table;
   retention: logs.RetentionDays;
   isProduction: boolean;
+  eventBus: events.IEventBus;
 }
 
 export class ReturnWorkflow extends Construct {
@@ -46,6 +47,7 @@ export class ReturnWorkflow extends Construct {
       }),
     );
     grantReturnShieldDataAccess(props.table, workerRole);
+    props.eventBus.grantPutEventsTo(workerRole);
     this.worker = new nodejs.NodejsFunction(this, 'Worker', {
       functionName: name('return-workflow'),
       entry: path.join(__dirname, '..', '..', 'services', 'workflow', 'src', 'handler.ts'),
@@ -56,7 +58,10 @@ export class ReturnWorkflow extends Construct {
       timeout: Duration.seconds(20),
       role: workerRole,
       logGroup: workerLogs,
-      environment: { RETURNSHIELD_TABLE_NAME: props.table.tableName },
+      environment: {
+        RETURNSHIELD_TABLE_NAME: props.table.tableName,
+        RETURNSHIELD_EVENT_BUS_NAME: props.eventBus.eventBusName,
+      },
       bundling: {
         minify: true,
         sourceMap: true,
@@ -98,6 +103,12 @@ export class ReturnWorkflow extends Construct {
         backoffRate: 2,
         maxAttempts: 3,
       });
+    states[6]!.addRetry({
+      errors: ['States.TaskFailed'],
+      interval: Duration.seconds(1),
+      backoffRate: 2,
+      maxAttempts: 3,
+    });
     for (let index = 0; index < states.length - 1; index += 1)
       states[index]!.next(states[index + 1]!);
     const workflowLogs = new logs.LogGroup(this, 'StateMachineLogs', {

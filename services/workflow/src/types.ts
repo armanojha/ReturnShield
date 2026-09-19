@@ -25,8 +25,8 @@ export interface WorkflowState {
   risk?: RiskEvaluationOutcome;
   case?: ReturnCase;
   integration?: {
-    review_event: 'NOT_REQUIRED' | 'PENDING_PHASE_06';
-    investigation: 'NOT_REQUIRED' | 'PENDING_PHASE_06';
+    review_event: 'NOT_REQUIRED' | 'EMITTED';
+    investigation: 'NOT_REQUIRED' | 'REQUESTED';
     reviewer_surface: 'READY';
   };
 }

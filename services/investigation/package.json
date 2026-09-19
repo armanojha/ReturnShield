@@ -1,21 +1,21 @@
 {
-  "name": "@returnshield/workflow",
+  "name": "@returnshield/investigation",
   "version": "0.1.0",
   "private": true,
+  "description": "Phase 06 Investigator: consumes RETURN_NEEDS_REVIEW events and persists validated, evidence-grounded explanations.",
   "type": "module",
-  "main": "./src/handler.ts",
+  "main": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
     "test:unit": "vitest run"
   },
   "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "3.687.0",
     "@aws-sdk/client-dynamodb": "3.687.0",
-    "@aws-sdk/client-eventbridge": "3.687.0",
     "@aws-sdk/lib-dynamodb": "3.687.0",
-    "@returnshield/context": "0.1.0",
     "@returnshield/contracts": "0.1.0",
-    "@returnshield/data": "0.1.0",
-    "@returnshield/risk-policy": "0.1.0"
+    "@returnshield/data": "0.1.0"
   },
   "devDependencies": {
     "@types/node": "20.16.11",
