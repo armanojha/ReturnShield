@@ -18,6 +18,8 @@ import { GSI, GSI_ATTR } from './table-schema';
 export interface ReturnShieldDataIndexesProps {
   /** The existing Phase 01 `CoreTable` (`ReturnShieldStack.table`). */
   table: dynamodb.Table;
+  /** DynamoDB permits only one GSI create/delete per table update. */
+  count?: number;
 }
 
 /**
@@ -33,35 +35,21 @@ export interface ReturnShieldDataIndexesProps {
  */
 export class ReturnShieldDataIndexes {
   constructor(_scope: Construct, _id: string, props: ReturnShieldDataIndexesProps) {
-    const { table } = props;
-
-    table.addGlobalSecondaryIndex({
-      indexName: GSI.BY_SELLER,
-      partitionKey: { name: GSI_ATTR.BY_SELLER.pk, type: ddb.AttributeType.STRING },
-      sortKey: { name: GSI_ATTR.BY_SELLER.sk, type: ddb.AttributeType.STRING },
-      projectionType: ddb.ProjectionType.ALL,
-    });
-
-    table.addGlobalSecondaryIndex({
-      indexName: GSI.BY_CUSTOMER,
-      partitionKey: { name: GSI_ATTR.BY_CUSTOMER.pk, type: ddb.AttributeType.STRING },
-      sortKey: { name: GSI_ATTR.BY_CUSTOMER.sk, type: ddb.AttributeType.STRING },
-      projectionType: ddb.ProjectionType.ALL,
-    });
-
-    table.addGlobalSecondaryIndex({
-      indexName: GSI.BY_ORDER,
-      partitionKey: { name: GSI_ATTR.BY_ORDER.pk, type: ddb.AttributeType.STRING },
-      sortKey: { name: GSI_ATTR.BY_ORDER.sk, type: ddb.AttributeType.STRING },
-      projectionType: ddb.ProjectionType.ALL,
-    });
-
-    table.addGlobalSecondaryIndex({
-      indexName: GSI.CASE_QUEUE,
-      partitionKey: { name: GSI_ATTR.CASE_QUEUE.pk, type: ddb.AttributeType.STRING },
-      sortKey: { name: GSI_ATTR.CASE_QUEUE.sk, type: ddb.AttributeType.STRING },
-      projectionType: ddb.ProjectionType.ALL,
-    });
+    const { table, count = 4 } = props;
+    const definitions = [
+      [GSI.BY_SELLER, GSI_ATTR.BY_SELLER],
+      [GSI.BY_CUSTOMER, GSI_ATTR.BY_CUSTOMER],
+      [GSI.BY_ORDER, GSI_ATTR.BY_ORDER],
+      [GSI.CASE_QUEUE, GSI_ATTR.CASE_QUEUE],
+    ] as const;
+    for (const [indexName, attributes] of definitions.slice(0, Math.max(0, Math.min(4, count)))) {
+      table.addGlobalSecondaryIndex({
+        indexName,
+        partitionKey: { name: attributes.pk, type: ddb.AttributeType.STRING },
+        sortKey: { name: attributes.sk, type: ddb.AttributeType.STRING },
+        projectionType: ddb.ProjectionType.ALL,
+      });
+    }
   }
 }
 

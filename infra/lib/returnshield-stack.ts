@@ -76,7 +76,11 @@ export class ReturnShieldStack extends Stack {
       removalPolicy: isProduction ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
     });
 
-    new ReturnShieldDataIndexes(this, 'DataIndexes', { table: this.table });
+    const requestedGsiCount = Number(this.node.tryGetContext('gsiStage') ?? 4);
+    const gsiCount = Number.isInteger(requestedGsiCount)
+      ? Math.max(0, Math.min(4, requestedGsiCount))
+      : 4;
+    new ReturnShieldDataIndexes(this, 'DataIndexes', { table: this.table, count: gsiCount });
 
     // --- Health function --------------------------------------------------
     const healthLogGroup = new logs.LogGroup(this, 'HealthFunctionLogs', {
