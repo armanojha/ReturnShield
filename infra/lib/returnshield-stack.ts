@@ -149,7 +149,10 @@ export class ReturnShieldStack extends Stack {
     );
     grantReturnShieldDataAccess(this.table, listingRole);
     listingRole.addToPolicy(
-      new iam.PolicyStatement({ actions: ['bedrock:Converse'], resources: ['*'] }),
+      new iam.PolicyStatement({
+        actions: ['bedrock:Converse', 'bedrock:InvokeModel'],
+        resources: ['*'],
+      }),
     );
     this.listingFunction = new nodejs.NodejsFunction(this, 'ListingFunction', {
       functionName: resourceName(envName, 'listing'),
