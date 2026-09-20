@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0.0",
+  "phase": "07A",
+  "sha256": {
+    "contracts/ai/image-models.schema.json": "de3fdbadf70247bcaf6ff826aafc19daa6a930df48a5ba41c2e451f805308ea7",
+    "contracts/api/image.schema.json": "9f95e20c2589a9ee8a8c57f4733fe993d6c363ede66f6e310c55ed56473ccabd",
+    "contracts/data/image-entities.schema.json": "654a965913d30dcb3d5257b8198b6be3d84740ca2072b77827eb98e5d8b9e059"
+  },
+  "hash_encoding": "UTF-8 with LF-normalized newlines"
+}

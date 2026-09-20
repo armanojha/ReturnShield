@@ -18,6 +18,7 @@ import type { Construct } from 'constructs';
 
 import { grantReturnShieldDataAccess, ReturnShieldDataIndexes } from '../data/data-indexes';
 import { ReviewEvents } from '../events/review-events';
+import { ImageEvidenceInfrastructure } from '../image/image-evidence';
 import { ReturnWorkflow } from '../workflow/return-workflow';
 
 /** Environments this stack may be deployed into. */
@@ -44,6 +45,7 @@ export class ReturnShieldStack extends Stack {
   public readonly healthFunction: nodejs.NodejsFunction;
   public readonly listingFunction: nodejs.NodejsFunction;
   public readonly returnFunction: nodejs.NodejsFunction;
+  public readonly imageFunction: nodejs.NodejsFunction;
 
   constructor(scope: Construct, id: string, props: ReturnShieldStackProps) {
     super(scope, id, props);
@@ -282,6 +284,16 @@ export class ReturnShieldStack extends Stack {
       new apigateway.LambdaIntegration(this.returnFunction, { proxy: true }),
     );
 
+    const imageEvidence = new ImageEvidenceInfrastructure(this, 'ImageEvidence', {
+      envName,
+      table: this.table,
+      v1,
+      retention,
+      isProduction,
+      bedrockModelId,
+    });
+    this.imageFunction = imageEvidence.imageFunction;
+
     // --- Outputs ----------------------------------------------------------
     new CfnOutput(this, 'ApiBaseUrl', {
       value: this.api.url,
@@ -320,5 +332,7 @@ export class ReturnShieldStack extends Stack {
     new CfnOutput(this, 'InvestigationDeadLetterQueueUrl', {
       value: reviewEvents.deadLetterQueue.queueUrl,
     });
+    new CfnOutput(this, 'ImageFunctionName', { value: this.imageFunction.functionName });
+    new CfnOutput(this, 'ImageEvidenceBucketName', { value: imageEvidence.bucket.bucketName });
   }
 }

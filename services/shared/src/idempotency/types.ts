@@ -13,8 +13,19 @@
  * analysis and reviewer decisions).
  */
 
-/** One idempotency record per logical POST-idempotency scope. */
-export type IdempotencyScope = 'RETURN' | 'LISTING_ANALYZE' | 'CASE_DECISION';
+/**
+ * One idempotency record per logical POST-idempotency scope.
+ * `IMAGE_UPLOAD`/`IMAGE_COMPLETE` are additive Phase 07A scopes (task
+ * P7A-IMG-01) for `POST /v1/images/uploads` and
+ * `POST /v1/images/{image_id}/complete`, following the same frozen
+ * "one idempotency key per scoped POST route" rule as the others.
+ */
+export type IdempotencyScope =
+  | 'RETURN'
+  | 'LISTING_ANALYZE'
+  | 'CASE_DECISION'
+  | 'IMAGE_UPLOAD'
+  | 'IMAGE_COMPLETE';
 
 /**
  * `IN_PROGRESS` — reservation is held, side effects have not (yet) committed.

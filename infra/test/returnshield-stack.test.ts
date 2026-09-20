@@ -76,7 +76,7 @@ describe('api boundary', () => {
     const gets = Object.values(methods).filter(
       (method) => (method.Properties as { HttpMethod: string }).HttpMethod === 'GET',
     );
-    expect(gets).toHaveLength(2);
+    expect(gets).toHaveLength(6);
   });
 
   it('nests health beneath the versioned root', () => {
@@ -121,6 +121,26 @@ describe('observability and data placeholder', () => {
     });
   });
 
+  it('creates a private, encrypted, versioned image evidence bucket', () => {
+    template.hasResourceProperties('AWS::S3::Bucket', {
+      BucketEncryption: Match.anyValue(),
+      PublicAccessBlockConfiguration: {
+        BlockPublicAcls: true,
+        BlockPublicPolicy: true,
+        IgnorePublicAcls: true,
+        RestrictPublicBuckets: true,
+      },
+      VersioningConfiguration: { Status: 'Enabled' },
+      LifecycleConfiguration: Match.anyValue(),
+    });
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      FunctionName: 'returnshield-dev-image',
+      Environment: {
+        Variables: Match.objectLike({ RETURNSHIELD_IMAGE_BUCKET_NAME: Match.anyValue() }),
+      },
+    });
+  });
+
   it('routes review events with bounded retries and a dead-letter queue', () => {
     template.hasResourceProperties('AWS::Events::Rule', {
       EventPattern: {
@@ -140,7 +160,7 @@ describe('observability and data placeholder', () => {
     });
   });
 
-  it('gives the Investigator model-scoped invoke permission', () => {
+  it('gives both AI functions model-scoped invoke permission', () => {
     const policies = template.findResources('AWS::IAM::Policy');
     const bedrockStatements = Object.values(policies).flatMap((policy) =>
       (
@@ -154,11 +174,13 @@ describe('observability and data placeholder', () => {
           ) && statement.Resource !== '*',
       ),
     );
-    expect(bedrockStatements).toHaveLength(1);
-    const serialized = JSON.stringify(bedrockStatements[0]!.Resource);
-    expect(serialized).toContain('foundation-model');
-    expect(serialized).toContain('inference-profile');
-    expect(bedrockStatements[0]!.Resource).not.toBe('*');
+    expect(bedrockStatements).toHaveLength(2);
+    for (const statement of bedrockStatements) {
+      const serialized = JSON.stringify(statement.Resource);
+      expect(serialized).toContain('foundation-model');
+      expect(serialized).toContain('inference-profile');
+      expect(statement.Resource).not.toBe('*');
+    }
   });
 });
 
@@ -176,6 +198,8 @@ describe('outputs', () => {
         'ReviewEventBusName',
         'InvestigatorFunctionName',
         'InvestigationDeadLetterQueueUrl',
+        'ImageFunctionName',
+        'ImageEvidenceBucketName',
       ]),
     );
   });

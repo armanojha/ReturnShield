@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://returnshield.example/contracts/api/image.schema.json",
+  "$defs": {
+    "ImageUploadRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": { "const": "1.0.0" },
+        "subject_type": { "enum": ["LISTING", "RETURN_CASE"] },
+        "subject_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$" },
+        "content_type": { "enum": ["image/jpeg", "image/png"] }
+      },
+      "required": ["schema_version", "subject_type", "subject_id", "content_type"]
+    },
+    "ImageUploadResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": { "const": "1.0.0" },
+        "correlation_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$" },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "image_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$" },
+            "upload_url": { "type": "string", "minLength": 1, "maxLength": 8000 },
+            "upload_expires_at": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+            },
+            "required_content_type": { "enum": ["image/jpeg", "image/png"] }
+          },
+          "required": ["image_id", "upload_url", "upload_expires_at", "required_content_type"]
+        }
+      },
+      "required": ["schema_version", "correlation_id", "data"]
+    },
+    "ImageCompleteRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": { "const": "1.0.0" }
+      },
+      "required": ["schema_version"]
+    },
+    "ImageEvidenceResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": { "const": "1.0.0" },
+        "correlation_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$" },
+        "data": {
+          "$ref": "https://returnshield.example/contracts/data/image-entities.schema.json#/$defs/ImageEvidence"
+        }
+      },
+      "required": ["schema_version", "correlation_id", "data"]
+    },
+    "ImageDownloadResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": { "const": "1.0.0" },
+        "correlation_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$" },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "download_url": { "type": "string", "minLength": 1, "maxLength": 8000 },
+            "expires_at": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+            }
+          },
+          "required": ["download_url", "expires_at"]
+        }
+      },
+      "required": ["schema_version", "correlation_id", "data"]
+    },
+    "ImageListResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": { "const": "1.0.0" },
+        "correlation_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$" },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "https://returnshield.example/contracts/data/image-entities.schema.json#/$defs/ImageEvidence"
+              }
+            },
+            "next_cursor": {
+              "anyOf": [{ "type": "string", "minLength": 1, "maxLength": 4000 }, { "type": "null" }]
+            }
+          },
+          "required": ["items", "next_cursor"]
+        }
+      },
+      "required": ["schema_version", "correlation_id", "data"]
+    }
+  }
+}

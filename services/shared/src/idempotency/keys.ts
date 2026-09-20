@@ -33,6 +33,17 @@ export function caseDecisionIdempotencyKey(caseId: string, idempotencyKey: strin
   return { pk: key, sk: key };
 }
 
+/** Phase 07A additive keys (task P7A-IMG-01). */
+export function imageUploadIdempotencyKey(idempotencyKey: string): KeyPair {
+  const key = `IDEMP#IMAGE_UPLOAD#${idempotencyKey}`;
+  return { pk: key, sk: key };
+}
+
+export function imageCompleteIdempotencyKey(imageId: string, idempotencyKey: string): KeyPair {
+  const key = `IDEMP#IMAGE_COMPLETE#${imageId}#${idempotencyKey}`;
+  return { pk: key, sk: key };
+}
+
 export function buildReservationInput(
   scope: IdempotencyScope,
   keys: KeyPair,

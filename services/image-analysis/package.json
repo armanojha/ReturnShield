@@ -1,0 +1,22 @@
+{
+  "name": "@returnshield/image-analysis",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Phase 07A (P7A-AI-01): Bedrock amazon.nova-lite-v1:0 multimodal client, strict ImageAnalysisOutput validation and safe failure mapping.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:unit": "vitest run"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "3.687.0",
+    "@returnshield/contracts": "0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.16.11",
+    "typescript": "5.6.3",
+    "vitest": "2.1.3"
+  }
+}

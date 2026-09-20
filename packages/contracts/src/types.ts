@@ -80,6 +80,20 @@ export type HttpDefinitionName =
   | 'DecisionRequest'
   | 'DecisionResponse';
 
+/**
+ * Named `$defs` in the additive Phase 07A image contract
+ * (`contracts/api/image.schema.json`, task P7A-CON-01). Separate from
+ * `HttpDefinitionName` so the frozen Phase 00 definition list above is
+ * never touched by this sidecar bundle.
+ */
+export type ImageHttpDefinitionName =
+  | 'ImageUploadRequest'
+  | 'ImageUploadResponse'
+  | 'ImageCompleteRequest'
+  | 'ImageEvidenceResponse'
+  | 'ImageDownloadResponse'
+  | 'ImageListResponse';
+
 /** Named entity definitions in the frozen data contract. */
 export type EntityDefinitionName =
   | 'Evidence'
@@ -91,6 +105,12 @@ export type EntityDefinitionName =
   | 'ReviewerDisposition'
   | 'RiskEvent'
   | 'ReturnCase';
+
+/**
+ * Named entity definitions in the additive Phase 07A image-entities
+ * contract (`contracts/data/image-entities.schema.json`, task P7A-CON-01).
+ */
+export type ImageEntityDefinitionName = 'ImageEvidence';
 
 /**
  * Named `$defs` in the frozen `contracts/ai/models.schema.json` contract.
@@ -105,3 +125,12 @@ export type AiDefinitionName =
   | 'InvestigatorInput'
   | 'InvestigatorOutput'
   | 'ReviewEvent';
+
+/**
+ * Named `$defs` in the additive Phase 07A image-analysis AI contract
+ * (`contracts/ai/image-models.schema.json`, task P7A-CON-01). Raw Bedrock
+ * `amazon.nova-lite-v1:0` output is validated against `ImageAnalysisOutput`
+ * before it is ever trusted or persisted, exactly as `ListingGuardOutput`
+ * is validated above — see `services/image-analysis`.
+ */
+export type ImageAiDefinitionName = 'ImageAnalysisOutput';

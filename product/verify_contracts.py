@@ -176,7 +176,13 @@ if manifest_path.exists():
     for name, digest in manifest['sha256'].items():
         canonical = (ROOT / name).read_text(encoding='utf-8').replace('\r\n', '\n').encode('utf-8')
         check(hashlib.sha256(canonical).hexdigest() == digest, f'Baseline changed: {name}')
+    additive_path = ROOT / 'product/additive-contract-manifest.json'
+    additive = json.loads(additive_path.read_text()) if additive_path.exists() else {'sha256': {}}
+    for name, digest in additive['sha256'].items():
+        canonical = (ROOT / name).read_text(encoding='utf-8').replace('\r\n', '\n').encode('utf-8')
+        check(hashlib.sha256(canonical).hexdigest() == digest, f'Additive contract changed: {name}')
     actual = {p.relative_to(ROOT).as_posix() for p in BASE.rglob('*') if p.is_file()}
-    check(actual == set(manifest['sha256']), 'Manifest contract inventory')
+    expected = set(manifest['sha256']) | set(additive['sha256'])
+    check(actual == expected, 'Manifest contract inventory')
 print(f'PASS: {checks} checks; {len(schemas)} schema bundles; 9 endpoints; 6 entities; 3 exact seed stories; routing boundaries and negative fixtures.')
 print('No AWS, application, persistence, concurrent idempotency or live Bedrock tests run; those belong to later phases.')

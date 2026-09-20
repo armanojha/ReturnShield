@@ -3,9 +3,12 @@ import type { ErrorObject, ValidateFunction } from 'ajv';
 import addFormats from 'ajv-formats';
 
 import {
+  aiImageModelsSchema,
   aiModelsSchema,
   apiHttpSchema,
+  apiImageSchema,
   dataEntitiesSchema,
+  dataImageEntitiesSchema,
   riskEvaluationSchema,
 } from './generated/schemas.js';
 import type {
@@ -14,15 +17,26 @@ import type {
   EntityDefinitionName,
   HealthResponse,
   HttpDefinitionName,
+  ImageAiDefinitionName,
+  ImageEntityDefinitionName,
+  ImageHttpDefinitionName,
 } from './types.js';
 
 const HTTP_SCHEMA_ID = 'https://returnshield.example/contracts/api/http.schema.json';
 const ENTITY_SCHEMA_ID = 'https://returnshield.example/contracts/data/entities.schema.json';
 const AI_SCHEMA_ID = 'https://returnshield.example/contracts/ai/models.schema.json';
+const IMAGE_HTTP_SCHEMA_ID = 'https://returnshield.example/contracts/api/image.schema.json';
+const IMAGE_ENTITY_SCHEMA_ID =
+  'https://returnshield.example/contracts/data/image-entities.schema.json';
+const IMAGE_AI_SCHEMA_ID = 'https://returnshield.example/contracts/ai/image-models.schema.json';
 
 /**
- * One Ajv instance holding every frozen bundle, so cross-bundle `$ref`s
- * (HTTP envelopes referencing data entities) resolve entirely offline.
+ * One Ajv instance holding every frozen bundle PLUS the additive Phase 07A
+ * image sidecar bundle (task P7A-CON-01), so cross-bundle `$ref`s (image
+ * entities referencing `ImageAnalysisOutput`, image HTTP envelopes
+ * referencing `ImageEvidence`) resolve entirely offline. Adding the image
+ * schemas here never edits or reinterprets a frozen Phase 00 `$def` — they
+ * are new `$id`s, added alongside the frozen ones.
  */
 function createAjv(): Ajv2020 {
   const ajv = new Ajv2020({
@@ -31,7 +45,15 @@ function createAjv(): Ajv2020 {
     allowUnionTypes: true,
   });
   addFormats(ajv);
-  ajv.addSchema([apiHttpSchema, dataEntitiesSchema, riskEvaluationSchema, aiModelsSchema]);
+  ajv.addSchema([
+    apiHttpSchema,
+    dataEntitiesSchema,
+    riskEvaluationSchema,
+    aiModelsSchema,
+    apiImageSchema,
+    dataImageEntitiesSchema,
+    aiImageModelsSchema,
+  ]);
   return ajv;
 }
 
@@ -39,6 +61,9 @@ const ajv = createAjv();
 const cache = new Map<HttpDefinitionName, ValidateFunction>();
 const entityCache = new Map<EntityDefinitionName, ValidateFunction>();
 const aiCache = new Map<AiDefinitionName, ValidateFunction>();
+const imageHttpCache = new Map<ImageHttpDefinitionName, ValidateFunction>();
+const imageEntityCache = new Map<ImageEntityDefinitionName, ValidateFunction>();
+const imageAiCache = new Map<ImageAiDefinitionName, ValidateFunction>();
 
 /** Compiled validator for a named `$def` of the frozen HTTP contract. */
 export function getHttpValidator(name: HttpDefinitionName): ValidateFunction {
@@ -114,6 +139,97 @@ export function assertValidAiOutput<T>(name: AiDefinitionName, payload: unknown)
   return result.value;
 }
 
+/** Compiled validator for a named `$def` of the additive Phase 07A image contract. */
+export function getImageHttpValidator(name: ImageHttpDefinitionName): ValidateFunction {
+  const cached = imageHttpCache.get(name);
+  if (cached) return cached;
+  const validator = ajv.getSchema(`${IMAGE_HTTP_SCHEMA_ID}#/$defs/${name}`);
+  if (!validator) throw new Error(`Image contract has no definition named "${name}"`);
+  imageHttpCache.set(name, validator);
+  return validator;
+}
+
+export function validateImageAgainst<T>(
+  name: ImageHttpDefinitionName,
+  payload: unknown,
+): ValidationResult<T> {
+  const validator = getImageHttpValidator(name);
+  const valid = validator(payload);
+  return valid
+    ? { valid: true, value: payload as T, errors: [] }
+    : { valid: false, errors: formatValidationErrors(validator.errors) };
+}
+
+export function assertValidImage<T>(name: ImageHttpDefinitionName, payload: unknown): T {
+  const result = validateImageAgainst<T>(name, payload);
+  if (!result.valid || result.value === undefined) {
+    throw new ContractViolationError(name, result.errors);
+  }
+  return result.value;
+}
+
+/** Compiled validator for a named `$def` of the additive Phase 07A `ImageEvidence` entity. */
+export function getImageEntityValidator(name: ImageEntityDefinitionName): ValidateFunction {
+  const cached = imageEntityCache.get(name);
+  if (cached) return cached;
+  const validator = ajv.getSchema(`${IMAGE_ENTITY_SCHEMA_ID}#/$defs/${name}`);
+  if (!validator) throw new Error(`Image contract has no entity definition named "${name}"`);
+  imageEntityCache.set(name, validator);
+  return validator;
+}
+
+export function validateImageEntity<T>(
+  name: ImageEntityDefinitionName,
+  payload: unknown,
+): ValidationResult<T> {
+  const validator = getImageEntityValidator(name);
+  const valid = validator(payload);
+  return valid
+    ? { valid: true, value: payload as T, errors: [] }
+    : { valid: false, errors: formatValidationErrors(validator.errors) };
+}
+
+export function assertValidImageEntity<T>(name: ImageEntityDefinitionName, payload: unknown): T {
+  const result = validateImageEntity<T>(name, payload);
+  if (!result.valid || result.value === undefined) {
+    throw new ContractViolationError(name, result.errors);
+  }
+  return result.value;
+}
+
+/**
+ * Compiled validator for `ImageAnalysisOutput` — raw `amazon.nova-lite-v1:0`
+ * Bedrock Converse output is untrusted until it passes this validator (task
+ * P7A-AI-01), mirroring `getAiValidator`/`assertValidAiOutput` above.
+ */
+export function getImageAiValidator(name: ImageAiDefinitionName): ValidateFunction {
+  const cached = imageAiCache.get(name);
+  if (cached) return cached;
+  const validator = ajv.getSchema(`${IMAGE_AI_SCHEMA_ID}#/$defs/${name}`);
+  if (!validator) throw new Error(`Image contract has no AI definition named "${name}"`);
+  imageAiCache.set(name, validator);
+  return validator;
+}
+
+export function validateImageAiOutput<T>(
+  name: ImageAiDefinitionName,
+  payload: unknown,
+): ValidationResult<T> {
+  const validator = getImageAiValidator(name);
+  const valid = validator(payload);
+  return valid
+    ? { valid: true, value: payload as T, errors: [] }
+    : { valid: false, errors: formatValidationErrors(validator.errors) };
+}
+
+export function assertValidImageAiOutput<T>(name: ImageAiDefinitionName, payload: unknown): T {
+  const result = validateImageAiOutput<T>(name, payload);
+  if (!result.valid || result.value === undefined) {
+    throw new ContractViolationError(name, result.errors);
+  }
+  return result.value;
+}
+
 /** Human-readable, log-safe rendering of Ajv errors. Never includes payload values. */
 export function formatValidationErrors(errors: ErrorObject[] | null | undefined): string[] {
   if (!errors || errors.length === 0) return [];
@@ -137,11 +253,23 @@ export function validateAgainst<T>(name: HttpDefinitionName, payload: unknown): 
 }
 
 export class ContractViolationError extends Error {
-  public readonly definition: HttpDefinitionName | EntityDefinitionName | AiDefinitionName;
+  public readonly definition:
+    | HttpDefinitionName
+    | EntityDefinitionName
+    | AiDefinitionName
+    | ImageHttpDefinitionName
+    | ImageEntityDefinitionName
+    | ImageAiDefinitionName;
   public readonly violations: string[];
 
   constructor(
-    definition: HttpDefinitionName | EntityDefinitionName | AiDefinitionName,
+    definition:
+      | HttpDefinitionName
+      | EntityDefinitionName
+      | AiDefinitionName
+      | ImageHttpDefinitionName
+      | ImageEntityDefinitionName
+      | ImageAiDefinitionName,
     violations: string[],
   ) {
     super(`Payload does not satisfy frozen contract "${definition}": ${violations.join('; ')}`);

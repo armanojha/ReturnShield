@@ -31,6 +31,11 @@ const FILES = [
   'risk/policy.json',
   'ai/models.schema.json',
   'seeds/stories.json',
+  // Phase 07A additive sidecar bundle (P7A-CON-01). These do not alter any
+  // frozen Phase 00 file above; they are new, separately versioned schemas.
+  'api/image.schema.json',
+  'data/image-entities.schema.json',
+  'ai/image-models.schema.json',
 ];
 
 const checkOnly = process.argv.includes('--check');

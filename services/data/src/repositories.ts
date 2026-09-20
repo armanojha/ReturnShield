@@ -2,6 +2,7 @@ import { assertValidEntity } from '@returnshield/contracts';
 import type { EntityDefinitionName } from '@returnshield/contracts';
 
 import { RepositoryConflictError, RepositoryValidationError } from './errors.js';
+import { ImageEvidenceRepository } from './image-repository.js';
 import { GSI, indexesFor, key, keyFor } from './keys.js';
 import type { RepositoryStore, StoredItem } from './store.js';
 import type { Customer, Entity, Listing, Order, ReturnCase, RiskEvent, Seller } from './types.js';
@@ -196,6 +197,8 @@ export interface Repositories {
   orders: OrderRepository;
   cases: ReturnCaseRepository;
   riskEvents: RiskEventRepository;
+  /** Phase 07A additive sidecar repository (task P7A-DATA-01). */
+  images: ImageEvidenceRepository;
 }
 export function createRepositories(store: RepositoryStore): Repositories {
   return {
@@ -205,5 +208,6 @@ export function createRepositories(store: RepositoryStore): Repositories {
     orders: new OrderRepository(store),
     cases: new ReturnCaseRepository(store),
     riskEvents: new RiskEventRepository(store),
+    images: new ImageEvidenceRepository(store),
   };
 }
