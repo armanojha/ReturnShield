@@ -5,7 +5,6 @@ import { DataTable } from '../../components/DataTable/DataTable';
 import { Badge } from '../../components/Badge/Badge';
 import { EmptyState } from '../../components/EmptyState/EmptyState';
 import { ErrorState } from '../../components/ErrorState/ErrorState';
-import { apiClient } from '../../api/client';
 
 /** Overview dashboard with metrics and open cases shortcut. */
 export const Overview: FC = () => {
