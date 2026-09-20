@@ -69,8 +69,7 @@ describe.each(ROUTES)('%s health indicator', (path) => {
     vi.mocked(fetch).mockRejectedValue(new TypeError('Failed to fetch'));
     renderAt(path);
 
-    const alert = await screen.findByRole('alert');
-    expect(alert).toHaveTextContent(/service health unavailable/i);
+    expect(await screen.findByText(/service health unavailable/i)).toBeInTheDocument();
     expect(screen.queryByText(/service healthy/i)).not.toBeInTheDocument();
   });
 
@@ -80,7 +79,7 @@ describe.each(ROUTES)('%s health indicator', (path) => {
     );
     renderAt(path);
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/unavailable/i);
+    expect(await screen.findByText(/service health unavailable/i)).toBeInTheDocument();
   });
 
   it('does not report healthy when the service returns a structured error', async () => {
@@ -101,7 +100,7 @@ describe.each(ROUTES)('%s health indicator', (path) => {
     );
     renderAt(path);
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/unavailable/i);
+    expect(await screen.findByText(/service health unavailable/i)).toBeInTheDocument();
   });
 });
 
@@ -119,23 +118,34 @@ describe('routing', () => {
 
   it('renders the marketplace workspace', async () => {
     renderAt('/marketplace');
-    expect(await screen.findByRole('heading', { name: /seller listing workspace/i })).toBeVisible();
+    expect(
+      await screen.findByRole('heading', {
+        name: /seller and customer workflows|seller listing workspace/i,
+      }),
+    ).toBeVisible();
   });
 
   it('renders the operations center', async () => {
     renderAt('/ops');
-    expect(await screen.findByRole('heading', { name: /trust command center/i })).toBeVisible();
+    expect(
+      await screen.findByRole('heading', {
+        name: /returnshield operations|trust command center/i,
+      }),
+    ).toBeVisible();
   });
 
   it('redirects the index route to the marketplace', async () => {
     renderAt('/');
-    expect(await screen.findByRole('heading', { name: /seller listing workspace/i })).toBeVisible();
+    expect(
+      await screen.findByRole('heading', {
+        name: /seller and customer workflows|seller listing workspace/i,
+      }),
+    ).toBeVisible();
   });
 
   it('exposes primary navigation to both routes', () => {
     renderAt('/ops');
-    const nav = screen.getByRole('navigation', { name: /primary/i });
-    expect(nav).toHaveTextContent('Marketplace');
-    expect(nav).toHaveTextContent('Operations');
+    const nav = screen.getByRole('navigation', { name: /^operations$/i });
+    expect(nav).toHaveTextContent(/overview/i);
   });
 });

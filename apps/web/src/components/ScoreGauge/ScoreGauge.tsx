@@ -1,21 +1,66 @@
+import type { CSSProperties } from 'react';
+
+interface ScoreGaugeProps {
+  score: number | null;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+function clampScore(
+  score: number,
+): number {
+  return Math.min(
+    100,
+    Math.max(0, score),
+  );
+}
+
 export function ScoreGauge({
   score,
   size = 'md',
-}: {
-  score: number;
-  size?: 'sm' | 'md' | 'lg';
-  showBars?: boolean;
-}) {
-  const level = score < 30 ? 'low' : score < 60 ? 'medium' : 'high';
+}: ScoreGaugeProps): JSX.Element {
+  const hasScore =
+    typeof score === 'number' &&
+    Number.isFinite(score);
+
+  const safeScore = hasScore
+    ? clampScore(score)
+    : 0;
+
+  const style: CSSProperties & {
+    '--score': number;
+  } = {
+    '--score': safeScore,
+  };
+
   return (
     <div
-      className={`score-ring score-ring--${size} score-ring--${level}`}
-      style={{ '--score': score } as React.CSSProperties}
+      className={`score-ring score-ring--${size}${
+        hasScore
+          ? ''
+          : ' score-ring--unavailable'
+      }`}
+      style={style}
+      aria-label={
+        hasScore
+          ? `Risk score ${safeScore} out of 100`
+          : 'Risk score unavailable'
+      }
     >
       <div>
-        <strong>{score}</strong>
-        <span>/ 100</span>
+        <strong>
+          {hasScore
+            ? safeScore
+            : '—'}
+        </strong>
+
+        <span>
+          {hasScore
+            ? '/ 100'
+            : 'score'}
+        </span>
       </div>
     </div>
   );
 }
+
+export default ScoreGauge;
