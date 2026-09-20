@@ -190,4 +190,60 @@ export function getListing(listingId: string): Promise<ListingResponse> {
   );
 }
 
-export const apiClient = { getHealth, analyzeListing, getListing, baseUrl };
+export function getCases(query?: {
+  limit?: number;
+  cursor?: string;
+  status?: 'PROCESSING' | 'DECIDED' | 'ERROR_MISSING_CONTEXT' | 'FAILED';
+  priority?: 'NONE' | 'NORMAL' | 'HIGH';
+  decision?: 'AUTO_APPROVE' | 'NEEDS_REVIEW';
+  seller_id?: string;
+  review_status?: 'OPEN' | 'RESOLVED';
+}): Promise<CasesResponse> {
+  return request<CasesResponse>('/v1/cases', 'CasesResponse', {
+    method: 'GET',
+    query,
+  });
+}
+
+export function getCase(caseId: string): Promise<CaseResponse> {
+  return request<CaseResponse>(`/v1/cases/${encodeURIComponent(caseId)}`, 'CaseResponse');
+}
+
+export function getSeller(sellerId: string): Promise<SellerResponse> {
+  return request<SellerResponse>(`/v1/sellers/${encodeURIComponent(sellerId)}`, 'SellerResponse');
+}
+
+export function getDashboard(): Promise<DashboardResponse> {
+  return request<DashboardResponse>('/v1/dashboard/summary', 'DashboardResponse');
+}
+
+export function postDecision(
+  caseId: string,
+  input: { action: 'APPROVE_RETURN' | 'DECLINE_RETURN'; note: string; expected_revision: number },
+  idempotencyKey?: string,
+): Promise<DecisionResponse> {
+  return request<DecisionResponse>(
+    `/v1/cases/${encodeURIComponent(caseId)}/decision`,
+    'DecisionResponse',
+    {
+      method: 'POST',
+      body: input,
+      headers: {
+        'content-type': 'application/json',
+        'idempotency-key': idempotencyKey ?? newCorrelationId(),
+      },
+    },
+  );
+}
+
+export const apiClient = {
+  getHealth,
+  analyzeListing,
+  getListing,
+  getCases,
+  getCase,
+  getSeller,
+  getDashboard,
+  postDecision,
+  baseUrl,
+};
