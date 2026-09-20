@@ -85,6 +85,14 @@ describe('model output validation', () => {
     output.summary = 'Seller return rate of 25% and 3 disputes support human review.';
     expect(validateInvestigatorOutput(JSON.stringify(output), input).summary).toContain('25%');
   });
+
+  it('allows equivalent decimal formatting and case-derived signal counts', () => {
+    const output = JSON.parse(seedExplanationText('high')) as { summary: string };
+    output.summary = 'All 5 active signals contribute to the 100.0 risk score.';
+    expect(validateInvestigatorOutput(JSON.stringify(output), input).summary).toContain(
+      '5 active signals',
+    );
+  });
 });
 
 describe('deterministic field guard', () => {

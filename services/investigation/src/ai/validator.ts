@@ -52,6 +52,8 @@ function knownNumbers(input: InvestigatorInput): Set<string> {
   add(input.case_id);
   const policy = input.policy_result;
   for (const value of [policy.score, policy.raw_contribution_total]) numbers.add(String(value));
+  numbers.add(String(policy.contributions.length));
+  numbers.add(String(policy.contributions.filter((item) => item.points > 0).length));
   for (const item of policy.contributions) {
     add(item.reason);
     numbers.add(String(item.points));
@@ -74,12 +76,14 @@ function assertTextSupported(text: string, numbers: Set<string>, ids: Set<string
       'UNSUPPORTED_CLAIM',
       'Explanation uses accusatory language that the evidence does not support',
     );
-  for (const value of numbersIn(text))
-    if (!numbers.has(value))
+  for (const value of numbersIn(text)) {
+    const normalized = String(Number(value));
+    if (!numbers.has(value) && !numbers.has(normalized))
       throw new InvestigatorValidationError(
         'UNSUPPORTED_CLAIM',
         'Explanation states a number that does not appear in the case evidence',
       );
+  }
   const prefixes = new Set([...FIXED_ID_PREFIXES, ...[...ids].map((id) => id.split('-')[0] ?? id)]);
   for (const token of text.match(ID_LIKE) ?? []) {
     const prefix = token.split('-')[0] ?? token;

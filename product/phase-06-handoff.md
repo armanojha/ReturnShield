@@ -32,7 +32,7 @@ No frozen contract, seed, threshold, score or decision changed. No `apps/web`, d
 
 - `npm run verify` — passed.
 - `python product/verify_contracts.py` — passed: 449 checks, 4 schema bundles, 9 endpoints, 6 entities and 3 exact seed stories.
-- Investigator tests — 48 passed.
+- Investigator tests — 49 passed, including equivalent numeric formatting and case-derived signal counts.
 - Workflow tests — 8 passed.
 - Infrastructure tests — 16 passed.
 - CDK synth — passed and bundled all five Lambdas.
