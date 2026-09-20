@@ -275,10 +275,15 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
         : failure(404, id, 'NOT_FOUND', 'Case was not found.');
     }
     if (method === 'GET' && resource === '/v1/sellers/{seller_id}') {
-      const value = await repositories.sellers.get(pathId(event, 'seller_id') ?? '');
-      return value
-        ? reply(200, assertValid('SellerResponse', envelope(id, value)), id)
-        : failure(404, id, 'NOT_FOUND', 'Seller was not found.');
+      const seller = await repositories.sellers.get(pathId(event, 'seller_id') ?? '');
+      if (!seller) return failure(404, id, 'NOT_FOUND', 'Seller was not found.');
+
+      const cases = (await repositories.cases.listAll())
+        .filter((item) => item.seller_id === seller.seller_id)
+        .sort((left, right) => right.updated_at.localeCompare(left.updated_at))
+        .map((item) => item.case_id);
+
+      return reply(200, assertValid('SellerResponse', envelope(id, { ...seller, cases })), id);
     }
     if (method === 'POST' && resource === '/v1/cases/{case_id}/decision')
       return decide(event, id, pathId(event, 'case_id') ?? '');
