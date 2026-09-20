@@ -47,6 +47,7 @@ export class ReturnShieldStack extends Stack {
   public readonly returnFunction: nodejs.NodejsFunction;
   public readonly imageFunction: nodejs.NodejsFunction;
   public readonly operationsFunction: nodejs.NodejsFunction;
+  public readonly partnerFunction: nodejs.NodejsFunction;
 
   constructor(scope: Construct, id: string, props: ReturnShieldStackProps) {
     super(scope, id, props);
@@ -267,6 +268,43 @@ export class ReturnShieldStack extends Stack {
       },
     });
 
+    const partnerLogGroup = new logs.LogGroup(this, 'PartnerFunctionLogs', {
+      logGroupName: `/aws/lambda/${resourceName(envName, 'partner')}`,
+      retention,
+      removalPolicy: isProduction ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
+    });
+    const partnerRole = new iam.Role(this, 'PartnerFunctionRole', {
+      roleName: resourceName(envName, 'partner-role'),
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      description: 'Synchronizes synthetic partner context before ReturnShield return intake.',
+    });
+    partnerRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+        resources: [partnerLogGroup.logGroupArn, `${partnerLogGroup.logGroupArn}:*`],
+      }),
+    );
+    grantReturnShieldDataAccess(this.table, partnerRole);
+    this.partnerFunction = new nodejs.NodejsFunction(this, 'PartnerFunction', {
+      functionName: resourceName(envName, 'partner'),
+      entry: path.join(__dirname, '..', '..', 'services', 'partner', 'src', 'handler.ts'),
+      handler: 'handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+      architecture: lambda.Architecture.ARM_64,
+      memorySize: 384,
+      timeout: Duration.seconds(10),
+      role: partnerRole,
+      logGroup: partnerLogGroup,
+      environment: { RETURNSHIELD_TABLE_NAME: this.table.tableName },
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        target: 'node20',
+        format: nodejs.OutputFormat.ESM,
+        externalModules: ['@aws-sdk/*'],
+      },
+    });
+
     // --- HTTP boundary ----------------------------------------------------
     const accessLogGroup = new logs.LogGroup(this, 'ApiAccessLogs', {
       logGroupName: `/aws/apigateway/${resourceName(envName, 'api')}`,
@@ -300,9 +338,21 @@ export class ReturnShieldStack extends Stack {
       defaultCorsPreflightOptions: {
         allowOrigins: apigateway.Cors.ALL_ORIGINS,
         allowMethods: ['GET', 'POST', 'OPTIONS'],
-        allowHeaders: ['content-type', 'x-correlation-id', 'idempotency-key'],
+        allowHeaders: ['content-type', 'x-api-key', 'x-correlation-id', 'idempotency-key'],
       },
     });
+
+    const partnerApiKey = this.api.addApiKey('DemoStoreApiKey', {
+      apiKeyName: resourceName(envName, 'demo-store'),
+      description: 'Server-side credential for the synthetic demo e-commerce platform.',
+    });
+    const partnerUsagePlan = this.api.addUsagePlan('DemoStoreUsagePlan', {
+      name: resourceName(envName, 'demo-store-plan'),
+      throttle: { rateLimit: 10, burstLimit: 5 },
+      quota: { limit: 5000, period: apigateway.Period.MONTH },
+    });
+    partnerUsagePlan.addApiKey(partnerApiKey);
+    partnerUsagePlan.addApiStage({ stage: this.api.deploymentStage });
 
     // All application routes live beneath this versioned root.
     const v1 = this.api.root.addResource('v1');
@@ -313,14 +363,22 @@ export class ReturnShieldStack extends Stack {
     const listings = v1.addResource('listings');
     listings
       .addResource('analyze')
-      .addMethod('POST', new apigateway.LambdaIntegration(this.listingFunction, { proxy: true }));
+      .addMethod('POST', new apigateway.LambdaIntegration(this.listingFunction, { proxy: true }), {
+        apiKeyRequired: true,
+      });
     listings
       .addResource('{listing_id}')
       .addMethod('GET', new apigateway.LambdaIntegration(this.listingFunction, { proxy: true }));
     v1.addResource('returns').addMethod(
       'POST',
       new apigateway.LambdaIntegration(this.returnFunction, { proxy: true }),
+      { apiKeyRequired: true },
     );
+    v1.addResource('partner')
+      .addResource('context')
+      .addMethod('POST', new apigateway.LambdaIntegration(this.partnerFunction, { proxy: true }), {
+        apiKeyRequired: true,
+      });
     const operationsIntegration = new apigateway.LambdaIntegration(this.operationsFunction, {
       proxy: true,
     });
@@ -369,6 +427,8 @@ export class ReturnShieldStack extends Stack {
     });
     new CfnOutput(this, 'ReturnFunctionName', { value: this.returnFunction.functionName });
     new CfnOutput(this, 'OperationsFunctionName', { value: this.operationsFunction.functionName });
+    new CfnOutput(this, 'PartnerFunctionName', { value: this.partnerFunction.functionName });
+    new CfnOutput(this, 'DemoStoreApiKeyId', { value: partnerApiKey.keyId });
     new CfnOutput(this, 'ReturnWorkflowArn', {
       value: returnWorkflow.stateMachine.stateMachineArn,
     });

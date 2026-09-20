@@ -25,7 +25,8 @@ export type IdempotencyScope =
   | 'LISTING_ANALYZE'
   | 'CASE_DECISION'
   | 'IMAGE_UPLOAD'
-  | 'IMAGE_COMPLETE';
+  | 'IMAGE_COMPLETE'
+  | 'PARTNER_CONTEXT';
 
 /**
  * `IN_PROGRESS` — reservation is held, side effects have not (yet) committed.

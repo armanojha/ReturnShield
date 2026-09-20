@@ -44,6 +44,12 @@ export function imageCompleteIdempotencyKey(imageId: string, idempotencyKey: str
   return { pk: key, sk: key };
 }
 
+/** Phase 07B partner-context synchronization key. */
+export function partnerContextIdempotencyKey(idempotencyKey: string): KeyPair {
+  const key = `IDEMP#PARTNER_CONTEXT#${idempotencyKey}`;
+  return { pk: key, sk: key };
+}
+
 export function buildReservationInput(
   scope: IdempotencyScope,
   keys: KeyPair,

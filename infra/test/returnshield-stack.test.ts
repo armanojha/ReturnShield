@@ -84,6 +84,21 @@ describe('api boundary', () => {
     template.hasResourceProperties('AWS::ApiGateway::Resource', { PathPart: 'health' });
   });
 
+  it('protects partner mutations with a throttled API key', () => {
+    template.resourceCountIs('AWS::ApiGateway::ApiKey', 1);
+    template.hasResourceProperties('AWS::ApiGateway::UsagePlan', {
+      UsagePlanName: 'returnshield-dev-demo-store-plan',
+      Throttle: { BurstLimit: 5, RateLimit: 10 },
+      Quota: { Limit: 5000, Period: 'MONTH' },
+    });
+    const methods = template.findResources('AWS::ApiGateway::Method');
+    const protectedPosts = Object.values(methods).filter((method) => {
+      const properties = method.Properties as { HttpMethod: string; ApiKeyRequired?: boolean };
+      return properties.HttpMethod === 'POST' && properties.ApiKeyRequired === true;
+    });
+    expect(protectedPosts).toHaveLength(5);
+  });
+
   it('writes stage access logs to CloudWatch', () => {
     template.hasResourceProperties('AWS::ApiGateway::Stage', {
       StageName: 'dev',
@@ -200,6 +215,8 @@ describe('outputs', () => {
         'InvestigationDeadLetterQueueUrl',
         'ImageFunctionName',
         'ImageEvidenceBucketName',
+        'PartnerFunctionName',
+        'DemoStoreApiKeyId',
       ]),
     );
   });

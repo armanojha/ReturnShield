@@ -127,10 +127,10 @@ export class ImageEvidenceInfrastructure extends Construct {
     });
     const integration = new apigateway.LambdaIntegration(this.imageFunction, { proxy: true });
     const images = props.v1.addResource('images');
-    images.addResource('uploads').addMethod('POST', integration);
+    images.addResource('uploads').addMethod('POST', integration, { apiKeyRequired: true });
     const image = images.addResource('{image_id}');
     image.addMethod('GET', integration);
-    image.addResource('complete').addMethod('POST', integration);
+    image.addResource('complete').addMethod('POST', integration, { apiKeyRequired: true });
     image.addResource('download').addMethod('GET', integration);
     props.v1
       .getResource('listings')!

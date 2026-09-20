@@ -12,6 +12,7 @@ export {
   imageCompleteIdempotencyKey,
   imageUploadIdempotencyKey,
   listingAnalyzeIdempotencyKey,
+  partnerContextIdempotencyKey,
   returnIdempotencyKey,
   type KeyPair,
 } from './keys.js';
