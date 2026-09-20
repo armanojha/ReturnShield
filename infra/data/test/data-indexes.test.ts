@@ -96,12 +96,12 @@ describe('ReturnShieldDataIndexes', () => {
       'dynamodb:PutItem',
       'dynamodb:UpdateItem',
       'dynamodb:Query',
+      'dynamodb:Scan',
       'dynamodb:TransactWriteItems',
     ]) {
       expect(actions).toContain(expected);
     }
     expect(actions).not.toContain('dynamodb:DeleteTable');
-    expect(actions).not.toContain('dynamodb:Scan');
     expect(actions).not.toContain('*');
   });
 });

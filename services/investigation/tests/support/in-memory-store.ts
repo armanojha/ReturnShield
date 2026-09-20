@@ -22,6 +22,11 @@ export class InMemoryRepositoryStore implements RepositoryStore {
       .filter((item) => item[partition] === input.partitionValue)
       .map((item) => structuredClone(item));
   }
+  async scan(entityType: string) {
+    return [...this.items.values()]
+      .filter((item) => item.entity_type === entityType)
+      .map((item) => structuredClone(item));
+  }
   async updateCase(item: StoredItem, expectedRevision: number): Promise<'WRITTEN' | 'CONFLICT'> {
     const existing = this.items.get(this.id(item.pk, item.sk));
     if (!existing || existing.revision !== expectedRevision) return 'CONFLICT';

@@ -137,9 +137,8 @@ export class ImageEvidenceInfrastructure extends Construct {
       .getResource('{listing_id}')!
       .addResource('images')
       .addMethod('GET', integration);
-    props.v1
-      .addResource('cases')
-      .addResource('{case_id}')
+    const caseRoot = props.v1.getResource('cases') ?? props.v1.addResource('cases');
+    (caseRoot.getResource('{case_id}') ?? caseRoot.addResource('{case_id}'))
       .addResource('images')
       .addMethod('GET', integration);
   }

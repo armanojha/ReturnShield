@@ -77,6 +77,7 @@ export function grantReturnShieldDataAccess(
       'dynamodb:PutItem',
       'dynamodb:UpdateItem',
       'dynamodb:Query',
+      'dynamodb:Scan',
       'dynamodb:ConditionCheckItem',
       'dynamodb:TransactWriteItems',
       'dynamodb:TransactGetItems',

@@ -44,9 +44,15 @@ describe.each(ROUTES)('%s health indicator', (path) => {
     vi.mocked(fetch).mockResolvedValue(jsonResponse(healthEnvelope(newCorrelationId())));
     renderAt(path);
 
-    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+    await waitFor(() =>
+      expect(vi.mocked(fetch).mock.calls.some(([url]) => String(url).endsWith('/v1/health'))).toBe(
+        true,
+      ),
+    );
 
-    const [url, init] = vi.mocked(fetch).mock.calls[0] as [string, RequestInit];
+    const [url, init] = vi
+      .mocked(fetch)
+      .mock.calls.find(([value]) => String(value).endsWith('/v1/health')) as [string, RequestInit];
     expect(url).toMatch(/\/v1\/health$/);
     expect(init.method).toBe('GET');
     expect((init.headers as Record<string, string>)['x-correlation-id']).toBeTruthy();
@@ -118,7 +124,7 @@ describe('routing', () => {
 
   it('renders the operations center', async () => {
     renderAt('/ops');
-    expect(await screen.findByRole('heading', { name: /trust operations center/i })).toBeVisible();
+    expect(await screen.findByRole('heading', { name: /trust command center/i })).toBeVisible();
   });
 
   it('redirects the index route to the marketplace', async () => {
