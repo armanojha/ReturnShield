@@ -9,6 +9,8 @@ export type {
 export {
   buildReservationInput,
   caseDecisionIdempotencyKey,
+  imageCompleteIdempotencyKey,
+  imageUploadIdempotencyKey,
   listingAnalyzeIdempotencyKey,
   returnIdempotencyKey,
   type KeyPair,

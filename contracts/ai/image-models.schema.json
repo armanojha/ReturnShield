@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://returnshield.example/contracts/ai/image-models.schema.json",
+  "$defs": {
+    "ImageAnalysisOutput": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "maxItems": 20
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+          },
+          "uniqueItems": true
+        },
+        "recommended_action": {
+          "enum": ["NONE", "FLAG_FOR_REVIEW"]
+        }
+      },
+      "required": ["schema_version", "summary", "findings", "evidence_refs", "recommended_action"]
+    }
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://returnshield.example/contracts/data/image-entities.schema.json",
+  "$defs": {
+    "ImageEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": { "const": "1.0.0" },
+        "image_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$" },
+        "subject_type": { "enum": ["LISTING", "RETURN_CASE"] },
+        "subject_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$" },
+        "s3_key": { "type": "string", "pattern": "^evidence/[A-Za-z0-9-]{1,120}$" },
+        "content_type": { "enum": ["image/jpeg", "image/png"] },
+        "size_bytes": { "anyOf": [{ "type": "integer", "minimum": 1, "maximum": 5242880 }, { "type": "null" }] },
+        "width": { "anyOf": [{ "type": "integer", "minimum": 32, "maximum": 4096 }, { "type": "null" }] },
+        "height": { "anyOf": [{ "type": "integer", "minimum": 32, "maximum": 4096 }, { "type": "null" }] },
+        "upload_status": { "enum": ["PENDING", "UPLOADED", "VALIDATED", "REJECTED", "EXPIRED"] },
+        "rejection_reason": {
+          "anyOf": [
+            {
+              "enum": [
+                "UNSUPPORTED_TYPE",
+                "SPOOFED_TYPE",
+                "OVERSIZED",
+                "INVALID_DIMENSIONS",
+                "UPLOAD_EXPIRED",
+                "OBJECT_MISSING",
+                "SUBJECT_MISMATCH"
+              ]
+            },
+            { "type": "null" }
+          ]
+        },
+        "analysis_status": { "enum": ["NOT_REQUESTED", "PENDING", "AVAILABLE", "UNAVAILABLE"] },
+        "analysis": {
+          "anyOf": [
+            { "$ref": "https://returnshield.example/contracts/ai/image-models.schema.json#/$defs/ImageAnalysisOutput" },
+            { "type": "null" }
+          ]
+        },
+        "model_id": { "anyOf": [{ "type": "string", "minLength": 1, "maxLength": 4000 }, { "type": "null" }] },
+        "upload_expires_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        },
+        "correlation_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$" },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
+        }
+      },
+      "required": [
+        "schema_version",
+        "image_id",
+        "subject_type",
+        "subject_id",
+        "s3_key",
+        "content_type",
+        "size_bytes",
+        "width",
+        "height",
+        "upload_status",
+        "rejection_reason",
+        "analysis_status",
+        "analysis",
+        "model_id",
+        "upload_expires_at",
+        "correlation_id",
+        "created_at",
+        "updated_at"
+      ],
+      "allOf": [
+        {
+          "if": { "properties": { "upload_status": { "const": "PENDING" } } },
+          "then": {
+            "properties": {
+              "size_bytes": { "type": "null" },
+              "width": { "type": "null" },
+              "height": { "type": "null" },
+              "rejection_reason": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "upload_status": { "const": "VALIDATED" } } },
+          "then": {
+            "properties": {
+              "size_bytes": { "type": "integer", "minimum": 1, "maximum": 5242880 },
+              "width": { "type": "integer", "minimum": 32, "maximum": 4096 },
+              "height": { "type": "integer", "minimum": 32, "maximum": 4096 },
+              "rejection_reason": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "upload_status": { "const": "REJECTED" } } },
+          "then": { "properties": { "rejection_reason": { "type": "string" } } }
+        },
+        {
+          "if": { "properties": { "analysis_status": { "const": "AVAILABLE" } } },
+          "then": {
+            "properties": {
+              "analysis": { "$ref": "https://returnshield.example/contracts/ai/image-models.schema.json#/$defs/ImageAnalysisOutput" },
+              "model_id": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
