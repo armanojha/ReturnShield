@@ -76,7 +76,7 @@ describe('api boundary', () => {
     const gets = Object.values(methods).filter(
       (method) => (method.Properties as { HttpMethod: string }).HttpMethod === 'GET',
     );
-    expect(gets).toHaveLength(6);
+    expect(gets).toHaveLength(10);
   });
 
   it('nests health beneath the versioned root', () => {

@@ -1,111 +1,136 @@
-import { FC, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../api/client';
-import { DataTable } from '../../components/DataTable/DataTable';
+import type { ReturnCase } from '../../api/types';
 import { Badge } from '../../components/Badge/Badge';
-import { EmptyState } from '../../components/EmptyState/EmptyState';
-import { ErrorState } from '../../components/ErrorState/ErrorState';
-
-/** Risk Queue with filters and pagination. */
-export const RiskQueue: FC = () => {
-  const [cases, setCases] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [cursor, setCursor] = useState<string | null>(null);
-  const [filters, setFilters] = useState({
-    status: '',
-    priority: '',
-    decision: '',
-    review_status: '',
-    seller_id: '',
-  });
-
-  const load = async () => {
+import { DataTable } from '../../components/DataTable/DataTable';
+export function RiskQueue() {
+  const nav = useNavigate();
+  const [items, setItems] = useState<ReturnCase[]>([]),
+    [query, setQuery] = useState(''),
+    [priority, setPriority] = useState(''),
+    [status, setStatus] = useState(''),
+    [loading, setLoading] = useState(true),
+    [error, setError] = useState('');
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError('');
     try {
-      setLoading(true);
-      const res = await apiClient.getCases({ ...filters, limit: 25, cursor: cursor || undefined });
-      setCases(res.data.items);
-      setCursor(res.data.next_cursor);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load cases');
+      const r = await apiClient.getCases({
+        limit: 100,
+        priority: priority || undefined,
+        review_status: status || undefined,
+      });
+      setItems(r.data.items);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Queue could not be loaded.');
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => { load(); }, [filters, cursor]);
-
-  const handleFilterChange = (key: string, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-    setCursor(null);
-  };
-
-  if (loading) return <div style={{ padding: 'var(--space-4)' }}>Loading…</div>;
-  if (error) return <ErrorState error={error} onRetry={load} />;
-
-  return (
-    <div className="risk-queue">
-      <div className="risk-queue__filters" style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap', marginBottom: 'var(--space-4)', alignItems: 'flex-end' }}>
-        <select value={filters.status} onChange={(e) => handleFilterChange('status', e.target.value)} style={{ padding: 'var(--space-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--surface)', color: 'var(--text)' }}>
-          <option value="">All Status</option>
-          <option value="PROCESSING">PROCESSING</option>
-          <option value="DECIDED">DECIDED</option>
-          <option value="ERROR_MISSING_CONTEXT">ERROR_MISSING_CONTEXT</option>
-          <option value="FAILED">FAILED</option>
-        </select>
-        <select value={filters.priority} onChange={(e) => handleFilterChange('priority', e.target.value)} style={{ padding: 'var(--space-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--surface)', color: 'var(--text)' }}>
-          <option value="">All Priority</option>
-          <option value="NONE">NONE</option>
-          <option value="NORMAL">NORMAL</option>
-          <option value="HIGH">HIGH</option>
-        </select>
-        <select value={filters.decision} onChange={(e) => handleFilterChange('decision', e.target.value)} style={{ padding: 'var(--space-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--surface)', color: 'var(--text)' }}>
-          <option value="">All Decision</option>
-          <option value="AUTO_APPROVE">AUTO_APPROVE</option>
-          <option value="NEEDS_REVIEW">NEEDS_REVIEW</option>
-        </select>
-        <select value={filters.review_status} onChange={(e) => handleFilterChange('review_status', e.target.value)} style={{ padding: 'var(--space-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--surface)', color: 'var(--text)' }}>
-          <option value="">All Review</option>
-          <option value="OPEN">OPEN</option>
-          <option value="RESOLVED">RESOLVED</option>
-          <option value="NOT_APPLICABLE">NOT_APPLICABLE</option>
-        </select>
-        <input
-          type="text"
-          placeholder="Seller ID"
-          value={filters.seller_id}
-          onChange={(e) => handleFilterChange('seller_id', e.target.value)}
-          style={{ padding: 'var(--space-2)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--surface)', color: 'var(--text)', width: '200px' }}
-        />
-      </div>
-
-      {cases.length === 0 ? (
-        <EmptyState title="No cases found" message="Try adjusting your filters." />
-      ) : (
-        <>
-          <DataTable
-            columns={[
-              { key: 'case_id', header: 'Case ID', width: '140px' },
-              { key: 'risk_score', header: 'Score', width: '80px', render: (r) => <span style={{ fontWeight: 600 }}>{r.risk_score}</span> },
-              { key: 'priority', header: 'Priority', width: '100px', render: (r) => <Badge kind={r.priority}>{r.priority}</Badge> },
-              { key: 'seller_id', header: 'Seller', width: '140px' },
-              { key: 'listing_id', header: 'Listing', width: '140px' },
-              { key: 'reason', header: 'Reason', width: '160px' },
-              { key: 'decision', header: 'Decision', width: '140px', render: (r) => <Badge kind={r.decision}>{r.decision}</Badge> },
-              { key: 'review_status', header: 'Review', width: '120px', render: (r) => <Badge kind={r.review_status}>{r.review_status}</Badge> },
-              { key: 'updated_at', header: 'Updated', width: '180px', render: (r) => new Date(r.updated_at).toLocaleString() },
-            ]}
-            rows={cases}
-            onRowClick={(row) => window.location.href = `/ops/cases/${row.case_id}`}
-          />
-          {cursor && (
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 'var(--space-4)' }}>
-              <button onClick={() => setCursor(cursor)} style={{ padding: 'var(--space-2) var(--space-4)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--surface)', color: 'var(--text)', cursor: 'pointer' }}>
-                Load More
-              </button>
-            </div>
-          )}
-        </>
-      )}
-    </div>
+  }, [priority, status]);
+  useEffect(() => {
+    void load();
+  }, [load]);
+  const rows = useMemo(
+    () =>
+      items.filter((c) =>
+        [c.case_id, c.order_id, c.seller_id, c.reason].some((v) =>
+          v.toLowerCase().includes(query.toLowerCase()),
+        ),
+      ),
+    [items, query],
   );
-};
+  return (
+    <section id="queue" className="surface queue-card">
+      <div className="section-heading queue-heading">
+        <div>
+          <span className="eyebrow">Analyst workspace</span>
+          <h2>Risk review queue</h2>
+          <p>Cases ranked for human review. Policy scores remain immutable.</p>
+        </div>
+        <button className="button-secondary" onClick={() => void load()}>
+          ↻ Refresh
+        </button>
+      </div>
+      <div className="filters">
+        <label className="filter-search">
+          <span>⌕</span>
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search cases, orders or sellers"
+          />
+        </label>
+        <select value={priority} onChange={(e) => setPriority(e.target.value)}>
+          <option value="">All priorities</option>
+          <option value="HIGH">High priority</option>
+          <option value="NORMAL">Normal priority</option>
+          <option value="NONE">No review</option>
+        </select>
+        <select value={status} onChange={(e) => setStatus(e.target.value)}>
+          <option value="">All review states</option>
+          <option value="OPEN">Open</option>
+          <option value="RESOLVED">Resolved</option>
+        </select>
+        <span className="result-count">{rows.length} cases</span>
+      </div>
+      {error ? (
+        <div className="inline-error">
+          {error} <button onClick={() => void load()}>Retry</button>
+        </div>
+      ) : loading ? (
+        <div className="skeleton-table" />
+      ) : (
+        <DataTable<ReturnCase & Record<string, unknown>>
+          rows={rows as Array<ReturnCase & Record<string, unknown>>}
+          onRowClick={(row) => nav(`/ops/cases/${row.case_id}`)}
+          columns={[
+            {
+              key: 'case_id',
+              header: 'Case',
+              render: (r) => (
+                <div className="primary-cell">
+                  <strong>{r.case_id}</strong>
+                  <span>{new Date(r.created_at).toLocaleDateString()}</span>
+                </div>
+              ),
+            },
+            {
+              key: 'risk_score',
+              header: 'Risk',
+              render: (r) => (
+                <span
+                  className={`risk-number risk-${(r.risk_score ?? 0) >= 60 ? 'high' : (r.risk_score ?? 0) >= 30 ? 'medium' : 'low'}`}
+                >
+                  {r.risk_score ?? '—'}
+                </span>
+              ),
+            },
+            { key: 'priority', header: 'Priority', render: (r) => <Badge kind={r.priority} /> },
+            {
+              key: 'seller_id',
+              header: 'Seller',
+              render: (r) => (
+                <div className="primary-cell">
+                  <strong>{r.seller_id}</strong>
+                  <span>{r.listing_id}</span>
+                </div>
+              ),
+            },
+            {
+              key: 'reason',
+              header: 'Return reason',
+              render: (r) => <span>{r.reason.replaceAll('_', ' ')}</span>,
+            },
+            {
+              key: 'review_status',
+              header: 'Review',
+              render: (r) => <Badge kind={r.review_status} />,
+            },
+            { key: 'action', header: '', render: () => <span className="row-arrow">→</span> },
+          ]}
+        />
+      )}
+    </section>
+  );
+}

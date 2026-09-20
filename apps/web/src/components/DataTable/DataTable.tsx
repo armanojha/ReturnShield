@@ -1,65 +1,42 @@
-import { FC, PropsWithChildren } from 'react';
-
 interface Column<T> {
   key: string;
   header: string;
   render?: (row: T) => React.ReactNode;
   width?: string;
 }
-
-/** Generic data table with sorting and empty state. */
-export const DataTable: FC<PropsWithChildren<{
-  columns: Column<any>[];
-  rows: any[];
+export function DataTable<T extends Record<string, unknown>>({
+  columns,
+  rows,
+  emptyMessage = 'No records found',
+  onRowClick,
+}: {
+  columns: Column<T>[];
+  rows: T[];
   emptyMessage?: string;
-  onRowClick?: (row: any) => void;
-}>> = ({ columns, rows, emptyMessage = 'No data', onRowClick }) => {
-  if (rows.length === 0) {
-    return (
-      <div className="data-table__empty" style={{ padding: 'var(--space-4)', textAlign: 'center', color: 'var(--text-muted)' }}>
-        {emptyMessage}
-      </div>
-    );
-  }
-
+  onRowClick?: (row: T) => void;
+}) {
+  if (!rows.length) return <div className="table-empty">{emptyMessage}</div>;
   return (
-    <div className="data-table" style={{ overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <div className="data-table">
+      <table>
         <thead>
-          <tr style={{ borderBottom: '2px solid var(--border)' }}>
-            {columns.map((col) => (
-              <th
-                key={col.key}
-                style={{
-                  textAlign: 'left',
-                  padding: 'var(--space-2) var(--space-3)',
-                  fontWeight: 600,
-                  color: 'var(--text-muted)',
-                  width: col.width,
-                }}
-              >
-                {col.header}
+          <tr>
+            {columns.map((c) => (
+              <th key={c.key} style={{ width: c.width }}>
+                {c.header}
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, idx) => (
+          {rows.map((row, index) => (
             <tr
-              key={idx}
-              style={{
-                borderBottom: '1px solid var(--border)',
-                cursor: onRowClick ? 'pointer' : 'default',
-              }}
+              key={String(row.case_id ?? index)}
               onClick={() => onRowClick?.(row)}
+              className={onRowClick ? 'clickable' : ''}
             >
-              {columns.map((col) => (
-                <td
-                  key={col.key}
-                  style={{ padding: 'var(--space-2) var(--space-3)' }}
-                >
-                  {col.render ? col.render(row) : row[col.key]}
-                </td>
+              {columns.map((c) => (
+                <td key={c.key}>{c.render ? c.render(row) : String(row[c.key] ?? '—')}</td>
               ))}
             </tr>
           ))}
@@ -67,4 +44,4 @@ export const DataTable: FC<PropsWithChildren<{
       </table>
     </div>
   );
-};
+}

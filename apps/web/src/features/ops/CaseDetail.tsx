@@ -1,140 +1,216 @@
-import { FC, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { apiClient } from '../../api/client';
+import type { ImageEvidence, Listing, ReturnCase } from '../../api/types';
+import { Badge } from '../../components/Badge/Badge';
 import { ScoreGauge } from '../../components/ScoreGauge/ScoreGauge';
 import { SignalBar } from '../../components/SignalBar/SignalBar';
-import { EvidenceList } from '../../components/EvidenceList/EvidenceList';
-import { Timeline } from '../../components/Timeline/Timeline';
 import { DecisionPanel } from '../../components/DecisionPanel/DecisionPanel';
-import { Badge } from '../../components/Badge/Badge';
-import { EmptyState } from '../../components/EmptyState/EmptyState';
 import { ErrorState } from '../../components/ErrorState/ErrorState';
-
-/** Case Investigation screen with score, signals, evidence, timeline, and decision. */
-export const CaseDetail: FC<{ caseId: string }> = ({ caseId }) => {
-  const [caseData, setCaseData] = useState<any>(null);
-  const [listing, setListing] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        setLoading(true);
-        const [caseRes, listingRes] = await Promise.all([
-          apiClient.getCase(caseId),
-          apiClient.getListing(caseId).catch(() => null),
-        ]);
-        setCaseData(caseRes.data);
-        setListing(listingRes?.data || null);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load case');
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
+export function CaseDetail() {
+  const { caseId = '' } = useParams();
+  const [value, setValue] = useState<ReturnCase>(),
+    [listing, setListing] = useState<Listing>(),
+    [images, setImages] = useState<ImageEvidence[]>([]),
+    [error, setError] = useState('');
+  const load = useCallback(async () => {
+    setError('');
+    try {
+      const c = await apiClient.getCase(caseId);
+      setValue(c.data);
+      const [l, i] = await Promise.all([
+        apiClient.getListing(c.data.listing_id).catch(() => null),
+        apiClient.getCaseImages(caseId).catch(() => null),
+      ]);
+      setListing(l?.data);
+      setImages(i?.data.items ?? []);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Case could not be loaded.');
+    }
   }, [caseId]);
-
-  const handleDecision = () => {
-    setCaseData(prev => ({ ...prev, review_status: 'RESOLVED' }));
-  };
-
-  if (loading) return <div style={{ padding: 'var(--space-4)' }}>Loading…</div>;
-  if (error) return <ErrorState error={error} onRetry={() => window.location.reload()} />;
-  if (!caseData) return <EmptyState title="Case not found" />;
-
-  const c = caseData;
-  const score = c.risk_score ?? 0;
-  const contributions = c.contributions || [];
-
+  useEffect(() => {
+    void load();
+  }, [load]);
+  if (error) return <ErrorState error={error} onRetry={load} />;
+  if (!value)
+    return (
+      <div className="page-loader">
+        <span />
+        Loading case intelligence…
+      </div>
+    );
+  const explanation = value.explanation;
   return (
-    <div className="case-detail">
-      <div className="case-detail__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-6)', flexWrap: 'wrap', gap: 'var(--space-3)' }}>
+    <div className="case-page">
+      <div className="breadcrumbs">
+        <Link to="/ops">Overview</Link>
+        <span>/</span>
+        <Link to="/ops#queue">Risk queue</Link>
+        <span>/</span>
+        <strong>{value.case_id}</strong>
+      </div>
+      <div className="case-hero">
         <div>
-          <h2 style={{ margin: 0, fontSize: '1.5rem' }}>{c.case_id}</h2>
-          <div style={{ display: 'flex', gap: 'var(--space-2)', marginTop: 'var(--space-1)', flexWrap: 'wrap' }}>
-            <Badge kind={c.status}>{c.status}</Badge>
-            <Badge kind={c.priority}>{c.priority}</Badge>
-            <Badge kind={c.decision}>{c.decision}</Badge>
-            <Badge kind={c.review_status}>{c.review_status}</Badge>
+          <span className="eyebrow">Return investigation</span>
+          <h1>{value.case_id}</h1>
+          <div className="badge-row">
+            <Badge kind={value.priority} />
+            <Badge kind={value.review_status} />
+            <Badge kind={value.decision} />
           </div>
         </div>
-        <ScoreGauge score={score} size="lg" showBars />
-      </div>
-
-      <div className="case-detail__signals" style={{ marginBottom: 'var(--space-6)' }}>
-        <h3 style={{ marginBottom: 'var(--space-3)' }}>Contributing Signals</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-          {contributions.map((contrib: any) => (
-            <SignalBar
-              key={contrib.risk_event_id}
-              signal={contrib.signal}
-              contribution={contrib.contribution}
-              max={contrib.max}
-              reason={contrib.reason}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="case-detail__evidence" style={{ marginBottom: 'var(--space-6)' }}>
-        <h3 style={{ marginBottom: 'var(--space-3)' }}>Evidence</h3>
-        <EvidenceList items={c.evidence || []} />
-      </div>
-
-      {c.explanation && c.explanation_status === 'AVAILABLE' && (
-        <div className="case-detail__explanation" style={{ marginBottom: 'var(--space-6)', padding: 'var(--space-4)', background: 'var(--surface-raised)', borderRadius: 'var(--radius)', borderLeft: '4px solid var(--accent)' }}>
-          <h3 style={{ marginBottom: 'var(--space-2)' }}>AI Investigator Explanation</h3>
-          <p style={{ marginBottom: 'var(--space-2)' }}>{c.explanation.summary}</p>
-          <div style={{ marginBottom: 'var(--space-2)' }}>
-            <strong>Factors:</strong>
-            <ul style={{ marginLeft: 'var(--space-4)' }}>
-              {c.explanation.factors?.map((f: any, i: number) => (
-                <li key={i}>{f.signal}: {f.explanation}</li>
-              ))}
-            </ul>
+        <div className="case-meta">
+          <div>
+            <span>Order</span>
+            <strong>{value.order_id}</strong>
           </div>
-          <div style={{ fontWeight: 600 }}>Recommended: {c.explanation.recommended_action}</div>
+          <div>
+            <span>Seller</span>
+            <Link to={`/ops/sellers/${value.seller_id}`}>{value.seller_id}</Link>
+          </div>
+          <div>
+            <span>Last updated</span>
+            <strong>{new Date(value.updated_at).toLocaleString()}</strong>
+          </div>
         </div>
-      )}
-
-      <div className="case-detail__timeline" style={{ marginBottom: 'var(--space-6)' }}>
-        <h3 style={{ marginBottom: 'var(--space-3)' }}>Timeline</h3>
-        <Timeline events={c.timeline || []} />
       </div>
-
-      {listing && (
-        <div className="case-detail__listing" style={{ marginBottom: 'var(--space-6)', padding: 'var(--space-4)', background: 'var(--surface-raised)', borderRadius: 'var(--radius)', borderLeft: '4px solid var(--text-muted)' }}>
-          <h3 style={{ marginBottom: 'var(--space-2)' }}>Listing: {listing.listing_id}</h3>
-          <div style={{ marginBottom: 'var(--space-1)' }}><strong>Title:</strong> {listing.title}</div>
-          <div style={{ marginBottom: 'var(--space-1)' }}><strong>Description:</strong> {listing.description}</div>
-          <div style={{ marginBottom: 'var(--space-1)' }}><strong>Category:</strong> {listing.category}</div>
-          <div style={{ marginBottom: 'var(--space-1)' }}><strong>ListingGuard:</strong> <Badge kind={listing.status}>{listing.status}</Badge> <Badge kind={listing.listing_risk}>{listing.listing_risk}</Badge></div>
-          {listing.analysis?.issues?.length > 0 && (
-            <div style={{ marginTop: 'var(--space-2)' }}>
-              <strong>Issues:</strong>
-              <ul style={{ marginLeft: 'var(--space-4)' }}>
-                {listing.analysis.issues.map((issue: any, i: number) => (
-                  <li key={i}>{issue.description}</li>
-                ))}
-              </ul>
+      <div className="case-layout">
+        <div className="case-primary">
+          <section className="surface risk-summary">
+            <div className="section-heading">
+              <div>
+                <span className="eyebrow">Deterministic assessment</span>
+                <h2>Risk composition</h2>
+              </div>
+              <ScoreGauge score={value.risk_score ?? 0} size="lg" />
             </div>
-          )}
-          {listing.analysis?.recommended_action && (
-            <div style={{ marginTop: 'var(--space-2)', fontStyle: 'italic' }}>{listing.analysis.recommended_action}</div>
-          )}
+            <div className="signals">
+              {value.contributions.map((c) => (
+                <SignalBar key={c.risk_event_id} {...c} />
+              ))}
+            </div>
+            <p className="raw-score">
+              Raw contributions <strong>{value.raw_contribution_total ?? '—'}</strong> · clamped
+              score <strong>{value.risk_score ?? '—'}</strong>
+            </p>
+          </section>
+          <section className="surface">
+            <div className="section-heading">
+              <div>
+                <span className="eyebrow">Evidence grounded</span>
+                <h2>AI investigator brief</h2>
+              </div>
+              <Badge kind={value.explanation_status} />
+            </div>
+            {explanation ? (
+              <div className="investigator">
+                <p>{explanation.summary}</p>
+                <div className="factor-grid">
+                  {explanation.factors?.map((f, index) => (
+                    <article key={`${f.signal}-${index}`}>
+                      <span>{String(index + 1).padStart(2, '0')}</span>
+                      <div>
+                        <strong>{f.signal}</strong>
+                        <p>{f.explanation}</p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+                <div className="recommendation">
+                  <span>Recommended next action</span>
+                  <strong>{explanation.recommended_action}</strong>
+                </div>
+              </div>
+            ) : (
+              <div className="empty-panel">
+                No validated investigator explanation is available for this case.
+              </div>
+            )}
+          </section>
+          <section className="surface">
+            <div className="section-heading">
+              <div>
+                <span className="eyebrow">Supporting context</span>
+                <h2>Evidence ledger</h2>
+              </div>
+              <span className="count-chip">{value.evidence.length + images.length} items</span>
+            </div>
+            <div className="evidence-grid">
+              {value.evidence.map((item) => (
+                <article key={item.evidence_id}>
+                  <span className="evidence-kind">{item.kind.replaceAll('_', ' ')}</span>
+                  <p>{item.text}</p>
+                  <small>
+                    {item.source_id} · {new Date(item.observed_at).toLocaleString()}
+                  </small>
+                </article>
+              ))}
+              {images.map((image) => (
+                <article className="image-evidence" key={image.image_id}>
+                  <span className="evidence-kind">IMAGE EVIDENCE</span>
+                  <p>
+                    {image.analysis?.summary ??
+                      `${image.content_type} · ${image.width ?? '?'} × ${image.height ?? '?'}`}
+                  </p>
+                  <button
+                    onClick={async () => {
+                      const r = await apiClient.getImageDownload(image.image_id);
+                      window.open(r.data.download_url, '_blank', 'noopener,noreferrer');
+                    }}
+                  >
+                    Open secure image ↗
+                  </button>
+                </article>
+              ))}
+            </div>
+          </section>
         </div>
-      )}
-
-      <div className="case-detail__decision">
-        <h3 style={{ marginBottom: 'var(--space-3)' }}>Decision</h3>
-        <DecisionPanel
-          caseId={c.case_id}
-          revision={c.revision}
-          reviewStatus={c.review_status}
-          onDecision={handleDecision}
-        />
+        <aside className="case-aside">
+          <section className="surface sticky-card">
+            <div className="section-heading">
+              <div>
+                <span className="eyebrow">Human checkpoint</span>
+                <h2>Final disposition</h2>
+              </div>
+            </div>
+            <DecisionPanel value={value} onDecision={setValue} />
+          </section>
+          <section className="surface listing-card">
+            <span className="eyebrow">Listing context</span>
+            <h3>{listing?.title ?? value.listing_id}</h3>
+            <p>{listing?.description ?? 'Listing details unavailable.'}</p>
+            {listing && (
+              <>
+                <div className="listing-facts">
+                  <span>
+                    Category<strong>{listing.category}</strong>
+                  </span>
+                  <span>
+                    Guard status
+                    <Badge kind={listing.status} />
+                  </span>
+                </div>
+              </>
+            )}
+          </section>
+          <section className="surface timeline-card">
+            <span className="eyebrow">Audit trail</span>
+            <h3>Case timeline</h3>
+            <ol>
+              {value.timeline.map((entry) => (
+                <li key={entry.event_id}>
+                  <i />
+                  <div>
+                    <strong>{entry.type.replaceAll('_', ' ')}</strong>
+                    <p>{entry.message}</p>
+                    <small>{new Date(entry.timestamp).toLocaleString()}</small>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+        </aside>
       </div>
     </div>
   );
-};
+}

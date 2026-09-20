@@ -1,72 +1,139 @@
-import { FC, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { apiClient } from '../../api/client';
+import type { ReturnCase } from '../../api/types';
 import { MetricCard } from '../../components/MetricCard/MetricCard';
-import { DataTable } from '../../components/DataTable/DataTable';
-import { Badge } from '../../components/Badge/Badge';
-import { EmptyState } from '../../components/EmptyState/EmptyState';
 import { ErrorState } from '../../components/ErrorState/ErrorState';
 
-/** Overview dashboard with metrics and open cases shortcut. */
-export const Overview: FC = () => {
-  const [metrics, setMetrics] = useState<any>(null);
-  const [openCases, setOpenCases] = useState<any[]>([]);
+export function Overview() {
+  const [metrics, setMetrics] =
+    useState<Awaited<ReturnType<typeof apiClient.getDashboard>>['data']>();
+  const [cases, setCases] = useState<ReturnCase[]>([]);
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        setLoading(true);
-        const [dashboard, cases] = await Promise.all([
-          apiClient.getDashboard(),
-          apiClient.getCases({ review_status: 'OPEN', limit: 10 }),
-        ]);
-        setMetrics(dashboard.data);
-        setOpenCases(cases.data.items);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load dashboard');
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const [dashboard, queue] = await Promise.all([
+        apiClient.getDashboard(),
+        apiClient.getCases({ limit: 100 }),
+      ]);
+      setMetrics(dashboard.data);
+      setCases(queue.data.items);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Dashboard could not be loaded.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
-
-  if (loading) return <div style={{ padding: 'var(--space-4)' }}>Loading…</div>;
-  if (error) return <ErrorState error={error} onRetry={() => window.location.reload()} />;
-
+  useEffect(() => {
+    void load();
+  }, [load]);
+  if (error) return <ErrorState error={error} onRetry={load} />;
+  const decided = cases.filter((c) => c.status === 'DECIDED').length,
+    approved = metrics?.auto_approved_returns ?? 0,
+    review = (metrics?.normal_review_cases ?? 0) + (metrics?.high_review_cases ?? 0),
+    approvalRate = decided ? Math.round((approved / decided) * 100) : 0;
   return (
-    <div className="overview">
-      <div className="overview__metrics" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
-        <MetricCard label="Flagged Listings" value={metrics?.flagged_listings ?? 0} kind="warn" />
-        <MetricCard label="Auto-Approved Returns" value={metrics?.auto_approved_returns ?? 0} kind="ok" />
-        <MetricCard label="Normal Review Cases" value={metrics?.normal_review_cases ?? 0} kind="warn" />
-        <MetricCard label="High Review Cases" value={metrics?.high_review_cases ?? 0} kind="danger" />
-        <MetricCard label="Open Review Cases" value={metrics?.open_review_cases ?? 0} kind="danger" />
-        <MetricCard label="Missing Context" value={metrics?.missing_context_cases ?? 0} kind="neutral" />
-      </div>
-
-      <div className="overview__open-cases">
-        <h3 style={{ marginBottom: 'var(--space-3)' }}>Needs Attention</h3>
-        {openCases.length === 0 ? (
-          <EmptyState title="No open review cases" message="All cases are resolved or auto-approved." />
-        ) : (
-          <DataTable
-            columns={[
-              { key: 'case_id', header: 'Case ID', width: '140px' },
-              { key: 'risk_score', header: 'Score', width: '80px', render: (r) => <span style={{ fontWeight: 600 }}>{r.risk_score}</span> },
-              { key: 'priority', header: 'Priority', width: '100px', render: (r) => <Badge kind={r.priority}>{r.priority}</Badge> },
-              { key: 'seller_id', header: 'Seller', width: '140px' },
-              { key: 'listing_id', header: 'Listing', width: '140px' },
-              { key: 'reason', header: 'Reason', width: '160px' },
-              { key: 'decision', header: 'Decision', width: '140px', render: (r) => <Badge kind={r.decision}>{r.decision}</Badge> },
-              { key: 'review_status', header: 'Review', width: '120px', render: (r) => <Badge kind={r.review_status}>{r.review_status}</Badge> },
-            ]}
-            rows={openCases}
-            onRowClick={(row) => window.location.href = `/ops/cases/${row.case_id}`}
-          />
-        )}
-      </div>
-    </div>
+    <>
+      <section className="metric-grid">
+        <MetricCard
+          label="Open reviews"
+          value={loading ? '—' : (metrics?.open_review_cases ?? 0)}
+          kind="danger"
+          detail="Cases awaiting analyst action"
+        />
+        <MetricCard
+          label="Auto-approved"
+          value={loading ? '—' : approved}
+          kind="ok"
+          detail={`${approvalRate}% of decided returns`}
+        />
+        <MetricCard
+          label="High priority"
+          value={loading ? '—' : (metrics?.high_review_cases ?? 0)}
+          kind="warn"
+          detail="Score 60 or above"
+        />
+        <MetricCard
+          label="Flagged listings"
+          value={loading ? '—' : (metrics?.flagged_listings ?? 0)}
+          detail="ListingGuard corrections"
+        />
+      </section>
+      <section className="insight-grid">
+        <article className="surface chart-card">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">Decision distribution</span>
+              <h2>Return outcomes</h2>
+            </div>
+            <span className="live-chip">Live dataset</span>
+          </div>
+          <div className="distribution">
+            <div
+              className="donut"
+              style={{ '--approved': `${approvalRate * 3.6}deg` } as React.CSSProperties}
+            >
+              <div>
+                <strong>{decided}</strong>
+                <span>decisions</span>
+              </div>
+            </div>
+            <div className="legend">
+              <div>
+                <i className="green" />
+                <span>Auto-approved</span>
+                <strong>{approved}</strong>
+              </div>
+              <div>
+                <i className="amber" />
+                <span>Needs review</span>
+                <strong>{review}</strong>
+              </div>
+              <div>
+                <i className="red" />
+                <span>Missing context</span>
+                <strong>{metrics?.missing_context_cases ?? 0}</strong>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article className="surface system-card">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">System posture</span>
+              <h2>Decision pipeline</h2>
+            </div>
+          </div>
+          <div className="pipeline">
+            <div>
+              <span>01</span>
+              <p>
+                <strong>ListingGuard</strong>
+                <small>Content checked by Nova</small>
+              </p>
+              <b>Healthy</b>
+            </div>
+            <div>
+              <span>02</span>
+              <p>
+                <strong>Risk policy</strong>
+                <small>Five deterministic signals</small>
+              </p>
+              <b>v1.0</b>
+            </div>
+            <div>
+              <span>03</span>
+              <p>
+                <strong>Investigator</strong>
+                <small>Evidence-grounded context</small>
+              </p>
+              <b>Online</b>
+            </div>
+          </div>
+        </article>
+      </section>
+    </>
   );
-};
+}

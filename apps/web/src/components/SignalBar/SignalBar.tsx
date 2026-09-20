@@ -1,23 +1,27 @@
-import { FC } from 'react';
-
-interface SignalBarProps {
-  signal: 'seller' | 'listing' | 'customer' | 'return' | 'category';
-  contribution: number;
-  max: number;
+export function SignalBar({
+  signal,
+  contribution,
+  max,
+  reason,
+}: {
+  signal: string;
+  contribution: number | null;
+  max: number | null;
   reason: string;
-}
-
-/** Horizontal signal bar: contribution / max with reason tooltip. */
-export const SignalBar: FC<SignalBarProps> = ({ signal, contribution, max, reason }) => {
-  const pct = (contribution / max) * 100;
-
+}) {
+  const pct = max && contribution !== null ? Math.round((contribution / max) * 100) : 0;
   return (
-    <div className="signal-bar">
-      <span className="signal-bar__label">{signal}</span>
-      <span className="signal-bar__pct">{pct.toFixed(0)}%</span>
-      <span className="signal-bar__tooltip" title={reason}>
-        {contribution}/{max}
-      </span>
+    <div className="signal-row">
+      <div className="signal-row__head">
+        <strong>{signal}</strong>
+        <span>
+          +{contribution ?? 0} / {max ?? 0}
+        </span>
+      </div>
+      <div className="signal-track">
+        <i style={{ width: `${pct}%` }} />
+      </div>
+      <p>{reason}</p>
     </div>
   );
-};
+}

@@ -1,21 +1,26 @@
-import { Page } from '../components/Page';
 import { Overview } from '../features/ops/Overview';
 import { RiskQueue } from '../features/ops/RiskQueue';
-
-/**
- * `/ops` — the Trust Operations Center.
- */
-export function OpsRoute(): JSX.Element {
+export function OpsRoute() {
   return (
-    <Page
-      eyebrow="Operations"
-      title="Trust Operations Center"
-      lede="Where reviewers see why a case needs review: contributing signals, evidence, the raw and clamped risk values, and who made the final decision."
-    >
+    <div className="dashboard">
+      <div className="dashboard-header">
+        <div>
+          <span className="eyebrow">Operations overview</span>
+          <h1>Trust command center</h1>
+          <p>Monitor listing quality, return risk and evidence-backed reviews in real time.</p>
+        </div>
+        <div className="date-chip">
+          <span>●</span> Live ·{' '}
+          {new Date().toLocaleDateString(undefined, {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          })}
+        </div>
+      </div>
       <Overview />
       <RiskQueue />
-    </Page>
+    </div>
   );
 }
-
 export default OpsRoute;

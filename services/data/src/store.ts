@@ -9,6 +9,7 @@ import {
   GetCommand,
   PutCommand,
   QueryCommand,
+  ScanCommand,
   TransactWriteCommand,
   UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
@@ -25,6 +26,7 @@ export interface RepositoryStore {
   put(item: StoredItem, createOnly?: boolean): Promise<'WRITTEN' | 'CONFLICT'>;
   get(pk: string, sk: string): Promise<StoredItem | undefined>;
   query(input: QueryInput): Promise<StoredItem[]>;
+  scan(entityType: string): Promise<StoredItem[]>;
   updateCase(item: StoredItem, expectedRevision: number): Promise<'WRITTEN' | 'CONFLICT'>;
   transactPut(items: StoredItem[]): Promise<'WRITTEN' | 'CONFLICT'>;
   delete(pk: string, sk: string): Promise<void>;
@@ -89,6 +91,25 @@ export class DynamoDbRepositoryStore implements RepositoryStore {
       }),
     );
     return (result.Items ?? []) as StoredItem[];
+  }
+
+  async scan(entityType: string): Promise<StoredItem[]> {
+    const items: StoredItem[] = [];
+    let exclusiveStartKey: Record<string, unknown> | undefined;
+    do {
+      const result = await this.client.send(
+        new ScanCommand({
+          TableName: this.tableName,
+          FilterExpression: '#entity = :entity',
+          ExpressionAttributeNames: { '#entity': 'entity_type' },
+          ExpressionAttributeValues: { ':entity': entityType },
+          ...(exclusiveStartKey ? { ExclusiveStartKey: exclusiveStartKey } : {}),
+        }),
+      );
+      items.push(...((result.Items ?? []) as StoredItem[]));
+      exclusiveStartKey = result.LastEvaluatedKey;
+    } while (exclusiveStartKey);
+    return items;
   }
 
   async updateCase(item: StoredItem, expectedRevision: number): Promise<'WRITTEN' | 'CONFLICT'> {

@@ -46,6 +46,7 @@ export class ReturnShieldStack extends Stack {
   public readonly listingFunction: nodejs.NodejsFunction;
   public readonly returnFunction: nodejs.NodejsFunction;
   public readonly imageFunction: nodejs.NodejsFunction;
+  public readonly operationsFunction: nodejs.NodejsFunction;
 
   constructor(scope: Construct, id: string, props: ReturnShieldStackProps) {
     super(scope, id, props);
@@ -229,6 +230,43 @@ export class ReturnShieldStack extends Stack {
       },
     });
 
+    const operationsLogGroup = new logs.LogGroup(this, 'OperationsFunctionLogs', {
+      logGroupName: `/aws/lambda/${resourceName(envName, 'operations')}`,
+      retention,
+      removalPolicy: isProduction ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
+    });
+    const operationsRole = new iam.Role(this, 'OperationsFunctionRole', {
+      roleName: resourceName(envName, 'operations-role'),
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      description: 'Read models and reviewer decisions for the operations console.',
+    });
+    operationsRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+        resources: [operationsLogGroup.logGroupArn, `${operationsLogGroup.logGroupArn}:*`],
+      }),
+    );
+    grantReturnShieldDataAccess(this.table, operationsRole);
+    this.operationsFunction = new nodejs.NodejsFunction(this, 'OperationsFunction', {
+      functionName: resourceName(envName, 'operations'),
+      entry: path.join(__dirname, '..', '..', 'services', 'operations', 'src', 'handler.ts'),
+      handler: 'handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+      architecture: lambda.Architecture.ARM_64,
+      memorySize: 512,
+      timeout: Duration.seconds(15),
+      role: operationsRole,
+      logGroup: operationsLogGroup,
+      environment: { RETURNSHIELD_TABLE_NAME: this.table.tableName },
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        target: 'node20',
+        format: nodejs.OutputFormat.ESM,
+        externalModules: ['@aws-sdk/*'],
+      },
+    });
+
     // --- HTTP boundary ----------------------------------------------------
     const accessLogGroup = new logs.LogGroup(this, 'ApiAccessLogs', {
       logGroupName: `/aws/apigateway/${resourceName(envName, 'api')}`,
@@ -283,6 +321,16 @@ export class ReturnShieldStack extends Stack {
       'POST',
       new apigateway.LambdaIntegration(this.returnFunction, { proxy: true }),
     );
+    const operationsIntegration = new apigateway.LambdaIntegration(this.operationsFunction, {
+      proxy: true,
+    });
+    const cases = v1.addResource('cases');
+    cases.addMethod('GET', operationsIntegration);
+    const caseItem = cases.addResource('{case_id}');
+    caseItem.addMethod('GET', operationsIntegration);
+    caseItem.addResource('decision').addMethod('POST', operationsIntegration);
+    v1.addResource('sellers').addResource('{seller_id}').addMethod('GET', operationsIntegration);
+    v1.addResource('dashboard').addResource('summary').addMethod('GET', operationsIntegration);
 
     const imageEvidence = new ImageEvidenceInfrastructure(this, 'ImageEvidence', {
       envName,
@@ -320,6 +368,7 @@ export class ReturnShieldStack extends Stack {
       description: 'ListingGuard Lambda function name, for log lookup.',
     });
     new CfnOutput(this, 'ReturnFunctionName', { value: this.returnFunction.functionName });
+    new CfnOutput(this, 'OperationsFunctionName', { value: this.operationsFunction.functionName });
     new CfnOutput(this, 'ReturnWorkflowArn', {
       value: returnWorkflow.stateMachine.stateMachineArn,
     });

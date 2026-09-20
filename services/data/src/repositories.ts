@@ -91,6 +91,9 @@ export class ListingRepository extends EntityRepository<Listing> {
       })
     ).map((item) => entity<Listing>('Listing', item));
   }
+  async listAll(): Promise<Listing[]> {
+    return (await this.data.scan('Listing')).map((item) => entity<Listing>('Listing', item));
+  }
 }
 export class CustomerRepository extends EntityRepository<Customer> {
   constructor(store: RepositoryStore) {
@@ -146,6 +149,11 @@ export class ReturnCaseRepository extends EntityRepository<ReturnCase> {
         partitionValue: 'CASE_QUEUE',
       })
     ).map((item) => entity<ReturnCase>('ReturnCase', item));
+  }
+  async listAll(): Promise<ReturnCase[]> {
+    return (await this.data.scan('ReturnCase')).map((item) =>
+      entity<ReturnCase>('ReturnCase', item),
+    );
   }
   async update(next: ReturnCase, expectedRevision: number): Promise<ReturnCase> {
     const current = await this.get(next.case_id);

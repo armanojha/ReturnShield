@@ -12,10 +12,10 @@ the frozen API contracts.
 ReturnShield is a trust and risk intelligence layer for e-commerce platforms.
 It is not a marketplace. The web application contains two surfaces:
 
-| Surface | Route | Audience | Shows |
-|---|---|---|---|
-| Mock Marketplace | `/marketplace` | Seller + customer (integration demo) | Listing outcomes, return request status |
-| Trust Operations Center | `/ops` | Reviewers | Risk scores, signals, evidence, AI explanation, decisions |
+| Surface                 | Route          | Audience                             | Shows                                                     |
+| ----------------------- | -------------- | ------------------------------------ | --------------------------------------------------------- |
+| Mock Marketplace        | `/marketplace` | Seller + customer (integration demo) | Listing outcomes, return request status                   |
+| Trust Operations Center | `/ops`         | Reviewers                            | Risk scores, signals, evidence, AI explanation, decisions |
 
 ### Information boundary (hard rule)
 
@@ -52,6 +52,7 @@ Form fields: `listing_id`, `seller_id`, `title`, `description`, `category`
 fresh `Idempotency-Key`.
 
 Result card:
+
 - `PASS` → green: "Listing approved · Risk: Low · Your listing can be published."
 - `CORRECTION_REQUIRED` → amber: "Listing needs correction" +
   - issues from `analysis.issues[]` (e.g. "New and used condition claims conflict")
@@ -68,6 +69,7 @@ Reasons (frozen enum): `NOT_AS_DESCRIBED`, `DAMAGED`, `WRONG_ITEM`,
 `NOT_RECEIVED`, `CHANGED_MIND`.
 
 Three public states only:
+
 1. Received: "Return request received · Case ID: … · Status: Processing"
 2. Approved: green — "Return approved. Please follow the return instructions."
 3. Under review: neutral — "Your return request is under review. We will update
@@ -141,14 +143,14 @@ case history. Drill-down from the queue.
 
 Typed, contract-validated functions (pattern: `assertValid<T>(definition, payload)`):
 
-| Function | Endpoint | Definition |
-|---|---|---|
-| `getCases(query)` | `GET /v1/cases` | `CasesResponse` |
-| `getCase(caseId)` | `GET /v1/cases/{id}` | `CaseResponse` |
-| `getSeller(sellerId)` | `GET /v1/sellers/{id}` | `SellerResponse` |
-| `getDashboard()` | `GET /v1/dashboard/summary` | `DashboardResponse` |
+| Function                      | Endpoint                       | Definition                             |
+| ----------------------------- | ------------------------------ | -------------------------------------- |
+| `getCases(query)`             | `GET /v1/cases`                | `CasesResponse`                        |
+| `getCase(caseId)`             | `GET /v1/cases/{id}`           | `CaseResponse`                         |
+| `getSeller(sellerId)`         | `GET /v1/sellers/{id}`         | `SellerResponse`                       |
+| `getDashboard()`              | `GET /v1/dashboard/summary`    | `DashboardResponse`                    |
 | `postDecision(caseId, input)` | `POST /v1/cases/{id}/decision` | `DecisionRequest` / `DecisionResponse` |
-| `createReturn(input)` | `POST /v1/returns` | `ReturnRequest` / `ReturnResponse` |
+| `createReturn(input)`         | `POST /v1/returns`             | `ReturnRequest` / `ReturnResponse`     |
 
 POSTs carry a fresh `Idempotency-Key` header. Types mirror the frozen schemas;
 runtime authority stays with the generated validators.

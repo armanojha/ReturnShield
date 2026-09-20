@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "paths": {
+      "@returnshield/contracts": ["../../packages/contracts/src/index.ts"],
+      "@returnshield/data": ["../data/src/index.ts"],
+      "@returnshield/shared": ["../shared/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts"]
+}
